@@ -104,14 +104,15 @@ export default function CheckIn() {
       if (checkinError) throw checkinError;
 
       // Update points
-      const { error: pointsError } = await supabase.rpc(
-        // Use raw SQL update via profile update
-        undefined as any
-      );
-      // Direct update approach
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("points")
+        .eq("user_id", user.id)
+        .single();
+
       await supabase
         .from("profiles")
-        .update({ points: (await supabase.from("profiles").select("points").eq("user_id", user.id).single()).data!.points + location.points_reward })
+        .update({ points: (currentProfile?.points ?? 0) + location.points_reward })
         .eq("user_id", user.id);
 
       // Check badge eligibility
