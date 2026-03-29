@@ -192,81 +192,85 @@ export default function Admin() {
 
   return (
     <AppLayout>
-      <div className="p-4 space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between pt-2">
-          <div>
-            <p className="text-muted-foreground text-sm">Admin Panel</p>
-            <h1 className="font-display text-2xl font-bold">Manage Locations</h1>
-          </div>
-          <Button onClick={openCreate} size="sm" className="gap-1.5">
-            <Plus className="w-4 h-4" />
-            Add
-          </Button>
+      <div className="p-4 space-y-4 animate-fade-in">
+        <div className="pt-2">
+          <p className="text-muted-foreground text-sm">Admin Panel</p>
+          <h1 className="font-display text-2xl font-bold">Management</h1>
         </div>
 
-        {locations.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <MapPin className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-muted-foreground">No locations yet. Create your first one!</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {locations.map((loc) => (
-              <Card key={loc.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-display font-semibold truncate">{loc.name}</h3>
-                      {loc.description && (
-                        <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
-                          {loc.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          {loc.points_reward} pts
-                        </span>
-                        <span className="font-mono text-[10px] bg-muted px-1.5 py-0.5 rounded">
-                          {loc.qr_code_id}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => showQr(loc)}
-                        title="View QR"
-                      >
-                        <QrCode className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEdit(loc)}
-                        title="Edit"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(loc)}
-                        title="Delete"
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+        <Tabs defaultValue="locations">
+          <TabsList className="w-full">
+            <TabsTrigger value="locations" className="flex-1 gap-1.5">
+              <MapPin className="w-4 h-4" />
+              Locations
+            </TabsTrigger>
+            <TabsTrigger value="users" className="flex-1 gap-1.5">
+              <Users className="w-4 h-4" />
+              Users
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="locations" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button onClick={openCreate} size="sm" className="gap-1.5">
+                <Plus className="w-4 h-4" />
+                Add Location
+              </Button>
+            </div>
+
+            {locations.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <MapPin className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-muted-foreground">No locations yet. Create your first one!</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="space-y-3">
+                {locations.map((loc) => (
+                  <Card key={loc.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-display font-semibold truncate">{loc.name}</h3>
+                          {loc.description && (
+                            <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+                              {loc.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Sparkles className="w-3 h-3" />
+                              {loc.points_reward} pts
+                            </span>
+                            <span className="font-mono text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                              {loc.qr_code_id}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => showQr(loc)} title="View QR">
+                            <QrCode className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(loc)} title="Edit">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(loc)} title="Delete" className="text-destructive hover:text-destructive">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="users" className="mt-4">
+            <UserManagement />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Create/Edit Dialog */}
