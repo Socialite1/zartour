@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -23,6 +24,7 @@ interface UserQuest {
 
 export default function Dashboard() {
   const { profile } = useAuth();
+  const { isAdmin } = useAdmin();
   const [checkinCount, setCheckinCount] = useState(0);
   const [badgeCount, setBadgeCount] = useState(0);
   const [rank, setRank] = useState<number | null>(null);
@@ -59,9 +61,19 @@ export default function Dashboard() {
     <AppLayout>
       <div className="p-4 space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="pt-2">
-          <p className="text-muted-foreground text-sm">Welcome back,</p>
-          <h1 className="font-display text-3xl font-bold">{firstName} 👋</h1>
+        <div className="pt-2 flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground text-sm">Welcome back,</p>
+            <h1 className="font-display text-3xl font-bold">{firstName} 👋</h1>
+          </div>
+          {isAdmin && (
+            <Link to="/admin">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Shield className="w-4 h-4" />
+                Admin
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Stats */}
