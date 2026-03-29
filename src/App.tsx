@@ -12,6 +12,7 @@ import Feed from "./pages/Feed";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Quests from "./pages/Quests";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
