@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -23,6 +24,7 @@ interface UserQuest {
 
 export default function Dashboard() {
   const { profile } = useAuth();
+  const { isAdmin } = useAdmin();
   const [checkinCount, setCheckinCount] = useState(0);
   const [badgeCount, setBadgeCount] = useState(0);
   const [rank, setRank] = useState<number | null>(null);
