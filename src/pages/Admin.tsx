@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +18,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { Plus, Pencil, Trash2, QrCode, MapPin, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, QrCode, MapPin, Download, Users } from "lucide-react";
 import { toast } from "sonner";
+import UserManagement from "@/components/admin/UserManagement";
 
 interface Location {
   id: string;
