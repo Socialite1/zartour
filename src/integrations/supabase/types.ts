@@ -106,6 +106,13 @@ export type Database = {
             referencedRelation: "locations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "checkins_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       locations: {
@@ -294,9 +301,41 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      locations_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          image_url: string | null
+          name: string | null
+          points_reward: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          points_reward?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          points_reward?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      advance_quest: { Args: { p_quest_id: string }; Returns: Json }
+      award_badge_if_eligible: {
+        Args: { p_badge_id: string }
+        Returns: undefined
+      }
+      get_location_by_qr: { Args: { p_qr_code_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -48,24 +48,11 @@ export default function Quests() {
 
   const advanceQuest = async (questId: string) => {
     if (!user) return;
-    const uq = userQuests.find(q => q.quest_id === questId);
-    if (!uq) return;
-    const quest = quests.find(q => q.id === questId)!;
-    const newProgress = uq.progress + 1;
-    const completed = newProgress >= quest.total_steps;
-
-    const { error } = await supabase
-      .from("user_quests")
-      .update({
-        progress: newProgress,
-        completed,
-        completed_at: completed ? new Date().toISOString() : null,
-      })
-      .eq("user_id", user.id)
-      .eq("quest_id", questId);
-
+    const { data, error } = await supabase.rpc("advance_quest", { p_quest_id: questId });
     if (error) { toast.error("Could not update quest"); return; }
-    toast.success(completed ? "Quest completed! 🎉" : `Step ${newProgress} complete!`);
+    const result = data as any;
+    if (result?.error) { toast.error(result.error); return; }
+    toast.success(result?.completed ? "Quest completed! 🎉" : `Step ${result?.progress} complete!`);
     load();
   };
 
