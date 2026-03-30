@@ -29,15 +29,18 @@ export default function Onboarding() {
     setLoading(true);
 
     try {
-      const { error } = await supabase
+      console.log("Onboarding: updating profile for user", user.id, { phone, origin });
+      const { error, data } = await supabase
         .from("profiles")
         .update({
           phone,
           origin: origin as any,
           onboarded: true,
         })
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .select();
 
+      console.log("Onboarding: update result", { error, data });
       if (error) throw error;
       await refreshProfile();
       toast.success("Welcome to Zartour! 🎉");
