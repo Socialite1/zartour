@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -17,36 +17,49 @@ const origins = [
 ] as const;
 
 export default function Onboarding() {
-  const { user, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [origin, setOrigin] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (profile?.onboarded) {
+    return <Navigate to="/" replace />;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !origin) return;
+    if (!origin) return;
     setLoading(true);
 
     try {
-      console.log("Onboarding: updating profile for user", user.id, { phone, origin });
-      const { error, data } = await supabase
+      const { error } = await supabase
         .from("profiles")
         .update({
           phone,
           origin: origin as any,
           onboarded: true,
         })
-        .eq("user_id", user.id)
-        .select();
+        .eq("user_id", user.id);
 
-      console.log("Onboarding: update result", { error, data });
       if (error) throw error;
       await refreshProfile();
       toast.success("Welcome to Zartour! 🎉");
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.message || "Could not complete onboarding");
     } finally {
       setLoading(false);
     }
