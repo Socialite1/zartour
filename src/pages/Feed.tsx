@@ -10,6 +10,7 @@ interface FeedItem {
   id: string;
   caption: string | null;
   image_url: string | null;
+  signed_image_url: string | null;
   created_at: string;
   points_earned: number;
   profiles: { full_name: string; avatar_url: string | null };
@@ -36,7 +37,6 @@ export default function Feed() {
 
     if (!checkins) { setLoading(false); return; }
 
-    // Get like counts and user likes
     const feedItems: FeedItem[] = [];
     for (const c of checkins) {
       const { count } = await supabase
@@ -55,12 +55,24 @@ export default function Feed() {
         likedByMe = !!myLike;
       }
 
+      // Generate signed URL for private bucket images
+      let signedImageUrl: string | null = null;
+      if (c.image_url && !c.image_url.startsWith("http")) {
+        const { data: signedData } = await supabase.storage
+          .from("checkin-images")
+          .createSignedUrl(c.image_url, 3600);
+        signedImageUrl = signedData?.signedUrl ?? null;
+      } else {
+        signedImageUrl = c.image_url;
+      }
+
       feedItems.push({
         ...c,
         profiles: c.profiles as any,
         locations: c.locations as any,
         like_count: count ?? 0,
         liked_by_me: likedByMe,
+        signed_image_url: signedImageUrl,
       });
     }
 
@@ -111,8 +123,8 @@ export default function Feed() {
           <div className="space-y-4">
             {items.map((item) => (
               <Card key={item.id} className="overflow-hidden">
-                {item.image_url && (
-                  <img src={item.image_url} alt="Check-in" className="w-full h-52 object-cover" />
+                {item.signed_image_url && (
+                  <img src={item.signed_image_url} alt="Check-in" className="w-full h-52 object-cover" />
                 )}
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center gap-2">

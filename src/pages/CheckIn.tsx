@@ -4,18 +4,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Camera, MapPin, CheckCircle2, Upload } from "lucide-react";
+import { MapPin, CheckCircle2, Upload } from "lucide-react";
 
 interface Location {
   id: string;
   name: string;
   description: string | null;
-  qr_code_id: string;
   points_reward: number;
 }
 
@@ -35,12 +33,18 @@ export default function CheckIn() {
 
   useEffect(() => {
     const loadLocations = async () => {
-      const { data } = await supabase.from("locations").select("*");
-      if (data) {
-        setLocations(data);
-        if (qrId) {
-          const loc = data.find(l => l.qr_code_id === qrId);
-          if (loc) setSelectedLocation(loc.id);
+      // Load locations without qr_code_id (uses authenticated SELECT)
+      const { data } = await supabase
+        .from("locations")
+        .select("id, name, description, points_reward");
+      if (data) setLocations(data);
+
+      // If QR code provided, look up location server-side
+      if (qrId) {
+        const { data: locData } = await supabase.rpc("get_location_by_qr", { p_qr_code_id: qrId });
+        if (locData) {
+          const loc = locData as any;
+          setSelectedLocation(loc.id);
         }
       }
     };
@@ -76,9 +80,9 @@ export default function CheckIn() {
       }
 
       const location = locations.find(l => l.id === selectedLocation)!;
-      let imageUrl: string | null = null;
+      let storagePath: string | null = null;
 
-      // Upload image
+      // Upload image to private bucket
       if (image) {
         const ext = image.name.split(".").pop();
         const path = `${user.id}/${Date.now()}.${ext}`;
@@ -86,18 +90,14 @@ export default function CheckIn() {
           .from("checkin-images")
           .upload(path, image);
         if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from("checkin-images")
-          .getPublicUrl(path);
-        imageUrl = urlData.publicUrl;
+        storagePath = path;
       }
 
-      // Create check-in
+      // Create check-in (store path, not public URL)
       const { error: checkinError } = await supabase.from("checkins").insert({
         user_id: user.id,
         location_id: selectedLocation,
-        image_url: imageUrl,
+        image_url: storagePath,
         caption: caption || null,
         points_earned: location.points_reward,
       });
@@ -115,7 +115,7 @@ export default function CheckIn() {
         .update({ points: (currentProfile?.points ?? 0) + location.points_reward })
         .eq("user_id", user.id);
 
-      // Check badge eligibility
+      // Check badge eligibility via server-side RPC
       const { count } = await supabase
         .from("checkins")
         .select("id", { count: "exact", head: true })
@@ -128,10 +128,7 @@ export default function CheckIn() {
 
       if (badges) {
         for (const badge of badges) {
-          await supabase.from("user_badges").upsert(
-            { user_id: user.id, badge_id: badge.id },
-            { onConflict: "user_id,badge_id" }
-          );
+          await supabase.rpc("award_badge_if_eligible", { p_badge_id: badge.id });
         }
       }
 
