@@ -4,11 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { MapPin, CheckCircle2, Upload } from "lucide-react";
+import { MapPin, CheckCircle2, ScanLine } from "lucide-react";
 
 interface Location {
   id: string;
@@ -22,46 +22,30 @@ export default function CheckIn() {
   const [searchParams] = useSearchParams();
   const qrId = searchParams.get("qr");
 
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadLocations = async () => {
-      // Load locations without qr_code_id (uses authenticated SELECT)
-      const { data } = await supabase
-        .from("locations")
-        .select("id, name, description, points_reward");
-      if (data) setLocations(data);
-
-      // If QR code provided, look up location server-side
-      if (qrId) {
-        const { data: locData } = await supabase.rpc("get_location_by_qr", { p_qr_code_id: qrId });
-        if (locData) {
-          const loc = locData as any;
-          setSelectedLocation(loc.id);
-        }
+    if (!qrId) return;
+    const lookupLocation = async () => {
+      const { data } = await supabase.rpc("get_location_by_qr", { p_qr_code_id: qrId });
+      if (data) {
+        const loc = data as any;
+        setLocation({ id: loc.id, name: loc.name, description: loc.description, points_reward: loc.points_reward });
+      } else {
+        setError("Invalid QR code. Please scan a valid location QR code.");
       }
     };
-    loadLocations();
+    lookupLocation();
   }, [qrId]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !selectedLocation) return;
+    if (!user || !location) return;
     setLoading(true);
 
     try {
@@ -70,7 +54,7 @@ export default function CheckIn() {
         .from("checkins")
         .select("id")
         .eq("user_id", user.id)
-        .eq("location_id", selectedLocation)
+        .eq("location_id", location.id)
         .maybeSingle();
 
       if (existing) {
@@ -79,25 +63,10 @@ export default function CheckIn() {
         return;
       }
 
-      const location = locations.find(l => l.id === selectedLocation)!;
-      let storagePath: string | null = null;
-
-      // Upload image to private bucket
-      if (image) {
-        const ext = image.name.split(".").pop();
-        const path = `${user.id}/${Date.now()}.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from("checkin-images")
-          .upload(path, image);
-        if (uploadError) throw uploadError;
-        storagePath = path;
-      }
-
-      // Create check-in (store path, not public URL)
+      // Create check-in
       const { error: checkinError } = await supabase.from("checkins").insert({
         user_id: user.id,
-        location_id: selectedLocation,
-        image_url: storagePath,
+        location_id: location.id,
         caption: caption || null,
         points_earned: location.points_reward,
       });
@@ -116,7 +85,7 @@ export default function CheckIn() {
         .eq("user_id", user.id);
 
       // Auto-advance any quests linked to this location
-      const { data: questResults } = await supabase.rpc("advance_quests_for_checkin", { p_location_id: selectedLocation });
+      const { data: questResults } = await supabase.rpc("advance_quests_for_checkin", { p_location_id: location.id });
       if (questResults && Array.isArray(questResults) && questResults.length > 0) {
         for (const qr of questResults as any[]) {
           if (qr.completed) {
@@ -127,7 +96,7 @@ export default function CheckIn() {
         }
       }
 
-      // Check badge eligibility via server-side RPC
+      // Check badge eligibility
       const { count } = await supabase
         .from("checkins")
         .select("id", { count: "exact", head: true })
@@ -168,10 +137,55 @@ export default function CheckIn() {
               <span className="text-5xl font-display font-bold text-secondary">+{pointsEarned}</span>
               <p className="text-muted-foreground mt-1">points earned</p>
             </div>
-            <Button onClick={() => { setSuccess(false); setCaption(""); setImage(null); setImagePreview(null); }} variant="outline" className="mt-6">
-              Check in somewhere else
+            <Button onClick={() => { setSuccess(false); setCaption(""); setLocation(null); }} variant="outline" className="mt-6">
+              Scan another location
             </Button>
           </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // No QR code scanned — prompt user to scan
+  if (!qrId) {
+    return (
+      <AppLayout>
+        <div className="p-4 flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <ScanLine className="w-10 h-10 text-primary" />
+            </div>
+            <h1 className="font-display text-2xl font-bold">Scan a QR Code</h1>
+            <p className="text-muted-foreground max-w-xs mx-auto">
+              Find a QR code at one of our locations and scan it with your phone camera to check in and earn points!
+            </p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="p-4 flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+              <MapPin className="w-10 h-10 text-destructive" />
+            </div>
+            <h1 className="font-display text-2xl font-bold">Invalid QR Code</h1>
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!location) {
+    return (
+      <AppLayout>
+        <div className="p-4 flex items-center justify-center min-h-[80vh]">
+          <p className="text-muted-foreground animate-pulse">Looking up location...</p>
         </div>
       </AppLayout>
     );
@@ -182,57 +196,32 @@ export default function CheckIn() {
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2">
           <h1 className="font-display text-2xl font-bold">Check In</h1>
-          <p className="text-muted-foreground text-sm">Visit a location and earn points</p>
+          <p className="text-muted-foreground text-sm">You're at a location — confirm to earn points!</p>
         </div>
+
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">{location.name}</p>
+                {location.description && <p className="text-xs text-muted-foreground">{location.description}</p>}
+              </div>
+            </div>
+            <div className="bg-secondary/10 rounded-lg p-3 text-center">
+              <span className="text-2xl font-bold text-secondary">+{location.points_reward}</span>
+              <p className="text-xs text-muted-foreground">points you'll earn</p>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardContent className="p-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Location</Label>
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  required
-                  className="w-full h-10 px-3 rounded-lg border border-input bg-background text-foreground text-sm"
-                >
-                  <option value="">Select a location...</option>
-                  {locations.map((loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {loc.name} (+{loc.points_reward} pts)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Photo Proof</Label>
-                <label className="block cursor-pointer">
-                  {imagePreview ? (
-                    <div className="relative rounded-xl overflow-hidden">
-                      <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
-                      <div className="absolute inset-0 bg-foreground/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                        <p className="text-primary-foreground text-sm font-medium bg-foreground/50 px-3 py-1 rounded-full">Change photo</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center gap-2 hover:border-primary/50 transition-colors">
-                      <Upload className="w-8 h-8 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Tap to upload a photo</p>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="caption">Caption (optional)</Label>
+                <Label htmlFor="caption">Say something (optional)</Label>
                 <Textarea
                   id="caption"
                   value={caption}
@@ -241,10 +230,9 @@ export default function CheckIn() {
                   maxLength={280}
                 />
               </div>
-
-              <Button type="submit" className="w-full" disabled={loading || !selectedLocation}>
-                <MapPin className="w-4 h-4 mr-2" />
-                {loading ? "Checking in..." : "Check In & Earn Points"}
+              <Button type="submit" className="w-full" disabled={loading}>
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                {loading ? "Checking in..." : "Confirm Check-In"}
               </Button>
             </form>
           </CardContent>
