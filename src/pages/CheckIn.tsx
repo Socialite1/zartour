@@ -115,6 +115,18 @@ export default function CheckIn() {
         .update({ points: (currentProfile?.points ?? 0) + location.points_reward })
         .eq("user_id", user.id);
 
+      // Auto-advance any quests linked to this location
+      const { data: questResults } = await supabase.rpc("advance_quests_for_checkin", { p_location_id: selectedLocation });
+      if (questResults && Array.isArray(questResults) && questResults.length > 0) {
+        for (const qr of questResults as any[]) {
+          if (qr.completed) {
+            toast.success("Quest completed! 🎉");
+          } else {
+            toast.success(`Quest progress: step ${qr.progress}!`);
+          }
+        }
+      }
+
       // Check badge eligibility via server-side RPC
       const { count } = await supabase
         .from("checkins")
