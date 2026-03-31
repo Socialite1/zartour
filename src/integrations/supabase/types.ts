@@ -184,6 +184,49 @@ export type Database = {
         }
         Relationships: []
       }
+      quest_locations: {
+        Row: {
+          id: string
+          location_id: string
+          quest_id: string
+          step_order: number
+        }
+        Insert: {
+          id?: string
+          location_id: string
+          quest_id: string
+          step_order?: number
+        }
+        Update: {
+          id?: string
+          location_id?: string
+          quest_id?: string
+          step_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_locations_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quests: {
         Row: {
           created_at: string
@@ -331,6 +374,10 @@ export type Database = {
     }
     Functions: {
       advance_quest: { Args: { p_quest_id: string }; Returns: Json }
+      advance_quests_for_checkin: {
+        Args: { p_location_id: string }
+        Returns: Json
+      }
       award_badge_if_eligible: {
         Args: { p_badge_id: string }
         Returns: undefined
@@ -346,7 +393,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
-      quest_type: "astrology" | "ikigai" | "human_design"
+      quest_type:
+        | "astrology"
+        | "ikigai"
+        | "human_design"
+        | "economical"
+        | "religious"
       user_origin:
         | "around_ga_mphahlele"
         | "local_community"
@@ -480,7 +532,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
-      quest_type: ["astrology", "ikigai", "human_design"],
+      quest_type: [
+        "astrology",
+        "ikigai",
+        "human_design",
+        "economical",
+        "religious",
+      ],
       user_origin: [
         "around_ga_mphahlele",
         "local_community",
