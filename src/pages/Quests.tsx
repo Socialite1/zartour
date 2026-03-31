@@ -5,7 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { Sparkles, CheckCircle2, MapPin } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -22,37 +22,71 @@ interface UserQuest {
   completed: boolean;
 }
 
+interface QuestLocation {
+  quest_id: string;
+  location_id: string;
+  step_order: number;
+  location_name: string;
+}
+
 export default function Quests() {
   const { user } = useAuth();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [userQuests, setUserQuests] = useState<UserQuest[]>([]);
+  const [questLocations, setQuestLocations] = useState<QuestLocation[]>([]);
+  const [checkedInLocationIds, setCheckedInLocationIds] = useState<Set<string>>(new Set());
 
   const load = async () => {
     const { data: q } = await supabase.from("quests").select("*");
     if (q) setQuests(q);
+
+    // Load quest-location mappings with location names
+    const { data: ql } = await supabase
+      .from("quest_locations")
+      .select("quest_id, location_id, step_order, locations(name)")
+      .order("step_order");
+    if (ql) {
+      setQuestLocations(
+        ql.map((item: any) => ({
+          quest_id: item.quest_id,
+          location_id: item.location_id,
+          step_order: item.step_order,
+          location_name: item.locations?.name ?? "Unknown",
+        }))
+      );
+    }
+
     if (user) {
-      const { data: uq } = await supabase.from("user_quests").select("quest_id, progress, completed").eq("user_id", user.id);
+      const { data: uq } = await supabase
+        .from("user_quests")
+        .select("quest_id, progress, completed")
+        .eq("user_id", user.id);
       if (uq) setUserQuests(uq);
+
+      const { data: checkins } = await supabase
+        .from("checkins")
+        .select("location_id")
+        .eq("user_id", user.id);
+      if (checkins) {
+        setCheckedInLocationIds(new Set(checkins.map((c) => c.location_id)));
+      }
     }
   };
 
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => {
+    load();
+  }, [user]);
 
   const startQuest = async (questId: string) => {
     if (!user) return;
-    const { error } = await supabase.from("user_quests").insert({ user_id: user.id, quest_id: questId });
-    if (error) { toast.error("Could not start quest"); return; }
+    const { error } = await supabase
+      .from("user_quests")
+      .insert({ user_id: user.id, quest_id: questId });
+    if (error) {
+      toast.error("Could not start quest");
+      return;
+    }
     toast.success("Quest started! 🚀");
-    load();
-  };
-
-  const advanceQuest = async (questId: string) => {
-    if (!user) return;
-    const { data, error } = await supabase.rpc("advance_quest", { p_quest_id: questId });
-    if (error) { toast.error("Could not update quest"); return; }
-    const result = data as any;
-    if (result?.error) { toast.error(result.error); return; }
-    toast.success(result?.completed ? "Quest completed! 🎉" : `Step ${result?.progress} complete!`);
     load();
   };
 
@@ -61,27 +95,41 @@ export default function Quests() {
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2">
           <h1 className="font-display text-2xl font-bold">Quests</h1>
-          <p className="text-muted-foreground text-sm">Embark on self-discovery journeys</p>
+          <p className="text-muted-foreground text-sm">
+            Visit linked locations to advance your quests
+          </p>
         </div>
 
         <div className="space-y-4">
           {quests.map((quest) => {
-            const uq = userQuests.find(q => q.quest_id === quest.id);
+            const uq = userQuests.find((q) => q.quest_id === quest.id);
             const progress = uq ? (uq.progress / quest.total_steps) * 100 : 0;
             const started = !!uq;
             const completed = uq?.completed ?? false;
+            const locations = questLocations.filter(
+              (ql) => ql.quest_id === quest.id
+            );
 
             return (
-              <Card key={quest.id} className={completed ? "ring-2 ring-success" : ""}>
+              <Card
+                key={quest.id}
+                className={completed ? "ring-2 ring-success" : ""}
+              >
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start gap-3">
                     <span className="text-3xl">{quest.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-display font-bold">{quest.title}</h3>
-                        {completed && <CheckCircle2 className="w-4 h-4 text-success" />}
+                        <h3 className="font-display font-bold">
+                          {quest.title}
+                        </h3>
+                        {completed && (
+                          <CheckCircle2 className="w-4 h-4 text-success" />
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{quest.description}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {quest.description}
+                      </p>
                       <span className="inline-block mt-1 px-2 py-0.5 bg-muted rounded-full text-[10px] uppercase font-medium text-muted-foreground tracking-wide">
                         {quest.type.replace("_", " ")}
                       </span>
@@ -92,7 +140,9 @@ export default function Quests() {
                     <div>
                       <div className="flex justify-between text-xs text-muted-foreground mb-1">
                         <span>Progress</span>
-                        <span>{uq!.progress}/{quest.total_steps}</span>
+                        <span>
+                          {uq!.progress}/{quest.total_steps}
+                        </span>
                       </div>
                       <div className="h-2.5 bg-muted rounded-full overflow-hidden">
                         <div
@@ -103,13 +153,46 @@ export default function Quests() {
                     </div>
                   )}
 
+                  {/* Show linked locations */}
+                  {locations.length > 0 && started && !completed && (
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Locations to visit:
+                      </p>
+                      {locations.map((loc) => {
+                        const visited = checkedInLocationIds.has(
+                          loc.location_id
+                        );
+                        return (
+                          <div
+                            key={loc.location_id}
+                            className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-lg ${
+                              visited
+                                ? "bg-success/10 text-success"
+                                : "bg-muted/50 text-muted-foreground"
+                            }`}
+                          >
+                            {visited ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            ) : (
+                              <MapPin className="w-3.5 h-3.5 shrink-0" />
+                            )}
+                            <span className={visited ? "line-through" : ""}>
+                              {loc.location_name}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   {!started ? (
-                    <Button onClick={() => startQuest(quest.id)} className="w-full" size="sm">
+                    <Button
+                      onClick={() => startQuest(quest.id)}
+                      className="w-full"
+                      size="sm"
+                    >
                       <Sparkles className="w-4 h-4 mr-2" /> Begin Quest
-                    </Button>
-                  ) : !completed ? (
-                    <Button onClick={() => advanceQuest(quest.id)} variant="outline" className="w-full" size="sm">
-                      Complete Next Step
                     </Button>
                   ) : null}
                 </CardContent>
