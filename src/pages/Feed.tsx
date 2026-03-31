@@ -100,8 +100,8 @@ export default function Feed() {
     <AppLayout>
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2">
-          <h1 className="font-display text-2xl font-bold">Activity Feed</h1>
-          <p className="text-muted-foreground text-sm">See what explorers are discovering</p>
+          <h1 className="font-display text-2xl font-bold">Your Activity</h1>
+          <p className="text-muted-foreground text-sm">Your check-ins and discoveries</p>
         </div>
 
         {loading ? (
