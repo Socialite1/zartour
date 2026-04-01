@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 
 interface LeaderboardEntry {
   user_id: string;
@@ -30,14 +31,27 @@ export default function Leaderboard() {
     load();
   }, []);
 
+  const myEntry = entries.find(e => e.user_id === user?.id);
+  const myRank = myEntry ? entries.indexOf(myEntry) + 1 : null;
+
   return (
     <AppLayout>
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2 text-center">
-          <Trophy className="w-10 h-10 mx-auto text-gold mb-2" />
+          <Trophy className="w-10 h-10 mx-auto text-yellow-500 mb-2" />
           <h1 className="font-display text-2xl font-bold">Leaderboard</h1>
           <p className="text-muted-foreground text-sm">Top explorers of Zartour</p>
         </div>
+
+        {myEntry && myRank && (
+          <div className="flex justify-center">
+            <ShareButton
+              title="My Zartour Ranking"
+              text={`I'm ranked #${myRank} on Zartour with ${myEntry.points} points! 🏆 Can you beat me?`}
+              url={window.location.origin}
+            />
+          </div>
+        )}
 
         <div className="space-y-2">
           {entries.map((entry, i) => {

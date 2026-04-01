@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, MapPin } from "lucide-react";
+import { Heart, MapPin, Sparkles, Trophy } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import ShareButton from "@/components/ShareButton";
 
 interface FeedItem {
   id: string;
@@ -20,9 +21,12 @@ interface FeedItem {
 }
 
 export default function Feed() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [totalCheckins, setTotalCheckins] = useState(0);
+  const [badgeCount, setBadgeCount] = useState(0);
 
   const loadFeed = async () => {
     const { data: checkins } = await supabase
@@ -36,6 +40,17 @@ export default function Feed() {
       .limit(50);
 
     if (!checkins) { setLoading(false); return; }
+
+    // Load stats
+    if (user) {
+      const [pointsRes, badgesRes] = await Promise.all([
+        supabase.from("profiles").select("points").eq("user_id", user.id).single(),
+        supabase.from("user_badges").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      ]);
+      setTotalPoints(pointsRes.data?.points ?? 0);
+      setBadgeCount(badgesRes.count ?? 0);
+      setTotalCheckins(checkins.filter((c: any) => true).length); // total from feed
+    }
 
     const feedItems: FeedItem[] = [];
     for (const c of checkins) {
@@ -55,7 +70,6 @@ export default function Feed() {
         likedByMe = !!myLike;
       }
 
-      // Generate signed URL for private bucket images
       let signedImageUrl: string | null = null;
       if (c.image_url && !c.image_url.startsWith("http")) {
         const { data: signedData } = await supabase.storage
@@ -100,9 +114,36 @@ export default function Feed() {
     <AppLayout>
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2">
-          <h1 className="font-display text-2xl font-bold">Your Activity</h1>
+          <h1 className="font-display text-2xl font-bold">Activity Feed</h1>
           <p className="text-muted-foreground text-sm">Your check-ins and discoveries</p>
         </div>
+
+        {/* Points Summary */}
+        {user && (
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="bg-primary text-primary-foreground">
+              <CardContent className="p-3 text-center">
+                <Sparkles className="w-4 h-4 mx-auto mb-0.5" />
+                <p className="text-xl font-display font-bold">{profile?.points ?? totalPoints}</p>
+                <p className="text-[10px] opacity-80">Points</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-3 text-center">
+                <MapPin className="w-4 h-4 mx-auto mb-0.5 text-secondary" />
+                <p className="text-xl font-display font-bold">{items.length}</p>
+                <p className="text-[10px] text-muted-foreground">Check-ins</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-3 text-center">
+                <Trophy className="w-4 h-4 mx-auto mb-0.5 text-yellow-500" />
+                <p className="text-xl font-display font-bold">{badgeCount}</p>
+                <p className="text-[10px] text-muted-foreground">Badges</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {loading ? (
           <div className="space-y-4">

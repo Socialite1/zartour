@@ -6,6 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogOut, MapPin, Sparkles, Trophy } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 
 interface Badge {
   id: string;
@@ -48,6 +49,7 @@ export default function Profile() {
   };
 
   const earnedBadgeIds = new Set(badges.map(b => b.id));
+  const earnedBadgeNames = badges.map(b => `${b.icon} ${b.name}`).join(", ");
 
   return (
     <AppLayout>
@@ -75,7 +77,17 @@ export default function Profile() {
 
         {/* Badges */}
         <div>
-          <h2 className="font-display text-lg font-bold mb-3">Badges</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display text-lg font-bold">Badges</h2>
+            {badges.length > 0 && (
+              <ShareButton
+                title="My Zartour Badges"
+                text={`I've earned ${badges.length} badge(s) on Zartour: ${earnedBadgeNames}! 🏆`}
+                url={window.location.origin}
+                size="sm"
+              />
+            )}
+          </div>
           <div className="grid grid-cols-5 gap-3">
             {allBadges.map((badge) => {
               const earned = earnedBadgeIds.has(badge.id);

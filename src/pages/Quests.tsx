@@ -5,7 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, MapPin } from "lucide-react";
+import { Sparkles, CheckCircle2, MapPin, Navigation, ExternalLink } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -27,6 +27,8 @@ interface QuestLocation {
   location_id: string;
   step_order: number;
   location_name: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export default function Quests() {
@@ -40,10 +42,9 @@ export default function Quests() {
     const { data: q } = await supabase.from("quests").select("*");
     if (q) setQuests(q);
 
-    // Load quest-location mappings with location names
     const { data: ql } = await supabase
       .from("quest_locations")
-      .select("quest_id, location_id, step_order, locations(name)")
+      .select("quest_id, location_id, step_order, locations(name, latitude, longitude)")
       .order("step_order");
     if (ql) {
       setQuestLocations(
@@ -52,6 +53,8 @@ export default function Quests() {
           location_id: item.location_id,
           step_order: item.step_order,
           location_name: item.locations?.name ?? "Unknown",
+          latitude: item.locations?.latitude ?? null,
+          longitude: item.locations?.longitude ?? null,
         }))
       );
     }
@@ -90,6 +93,16 @@ export default function Quests() {
     load();
   };
 
+  const openInMaps = (lat: number, lng: number, name: string) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=&travelmode=walking`;
+    window.open(url, "_blank");
+  };
+
+  const getNextLocation = (questId: string): QuestLocation | null => {
+    const locations = questLocations.filter(ql => ql.quest_id === questId);
+    return locations.find(loc => !checkedInLocationIds.has(loc.location_id)) ?? null;
+  };
+
   return (
     <AppLayout>
       <div className="p-4 space-y-4 animate-fade-in">
@@ -106,30 +119,20 @@ export default function Quests() {
             const progress = uq ? (uq.progress / quest.total_steps) * 100 : 0;
             const started = !!uq;
             const completed = uq?.completed ?? false;
-            const locations = questLocations.filter(
-              (ql) => ql.quest_id === quest.id
-            );
+            const locations = questLocations.filter(ql => ql.quest_id === quest.id);
+            const nextLoc = started && !completed ? getNextLocation(quest.id) : null;
 
             return (
-              <Card
-                key={quest.id}
-                className={completed ? "ring-2 ring-success" : ""}
-              >
+              <Card key={quest.id} className={completed ? "ring-2 ring-green-500" : ""}>
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start gap-3">
                     <span className="text-3xl">{quest.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-display font-bold">
-                          {quest.title}
-                        </h3>
-                        {completed && (
-                          <CheckCircle2 className="w-4 h-4 text-success" />
-                        )}
+                        <h3 className="font-display font-bold">{quest.title}</h3>
+                        {completed && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {quest.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">{quest.description}</p>
                       <span className="inline-block mt-1 px-2 py-0.5 bg-muted rounded-full text-[10px] uppercase font-medium text-muted-foreground tracking-wide">
                         {quest.type.replace("_", " ")}
                       </span>
@@ -140,9 +143,7 @@ export default function Quests() {
                     <div>
                       <div className="flex justify-between text-xs text-muted-foreground mb-1">
                         <span>Progress</span>
-                        <span>
-                          {uq!.progress}/{quest.total_steps}
-                        </span>
+                        <span>{uq!.progress}/{quest.total_steps}</span>
                       </div>
                       <div className="h-2.5 bg-muted rounded-full overflow-hidden">
                         <div
@@ -153,23 +154,17 @@ export default function Quests() {
                     </div>
                   )}
 
-                  {/* Show linked locations */}
+                  {/* Location checklist */}
                   {locations.length > 0 && started && !completed && (
                     <div className="space-y-1.5">
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Locations to visit:
-                      </p>
+                      <p className="text-xs font-medium text-muted-foreground">Locations to visit:</p>
                       {locations.map((loc) => {
-                        const visited = checkedInLocationIds.has(
-                          loc.location_id
-                        );
+                        const visited = checkedInLocationIds.has(loc.location_id);
                         return (
                           <div
                             key={loc.location_id}
                             className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-lg ${
-                              visited
-                                ? "bg-success/10 text-success"
-                                : "bg-muted/50 text-muted-foreground"
+                              visited ? "bg-green-500/10 text-green-600" : "bg-muted/50 text-muted-foreground"
                             }`}
                           >
                             {visited ? (
@@ -177,21 +172,40 @@ export default function Quests() {
                             ) : (
                               <MapPin className="w-3.5 h-3.5 shrink-0" />
                             )}
-                            <span className={visited ? "line-through" : ""}>
+                            <span className={`flex-1 ${visited ? "line-through" : ""}`}>
                               {loc.location_name}
                             </span>
+                            {!visited && loc.latitude && loc.longitude && (
+                              <button
+                                onClick={() => openInMaps(loc.latitude!, loc.longitude!, loc.location_name)}
+                                className="text-primary hover:text-primary/80"
+                                title="Get directions"
+                              >
+                                <Navigation className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   )}
 
-                  {!started ? (
+                  {/* Next step CTA */}
+                  {nextLoc && nextLoc.latitude && nextLoc.longitude && (
                     <Button
-                      onClick={() => startQuest(quest.id)}
-                      className="w-full"
+                      onClick={() => openInMaps(nextLoc.latitude!, nextLoc.longitude!, nextLoc.location_name)}
+                      variant="outline"
                       size="sm"
+                      className="w-full gap-2"
                     >
+                      <Navigation className="w-4 h-4" />
+                      Navigate to {nextLoc.location_name}
+                      <ExternalLink className="w-3 h-3" />
+                    </Button>
+                  )}
+
+                  {!started ? (
+                    <Button onClick={() => startQuest(quest.id)} className="w-full" size="sm">
                       <Sparkles className="w-4 h-4 mr-2" /> Begin Quest
                     </Button>
                   ) : null}
