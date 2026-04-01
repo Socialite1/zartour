@@ -115,12 +115,146 @@ export type Database = {
           },
         ]
       }
+      location_feedback: {
+        Row: {
+          created_at: string
+          feedback_text: string | null
+          id: string
+          location_id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          location_id: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          location_id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_feedback_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "location_feedback_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      location_quiz_questions: {
+        Row: {
+          correct_option: string
+          created_at: string
+          id: string
+          location_id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          question_order: number
+          question_text: string
+        }
+        Insert: {
+          correct_option: string
+          created_at?: string
+          id?: string
+          location_id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          question_order?: number
+          question_text: string
+        }
+        Update: {
+          correct_option?: string
+          created_at?: string
+          id?: string
+          location_id?: string
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          question_order?: number
+          question_text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_quiz_questions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "location_quiz_questions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      location_stories: {
+        Row: {
+          created_at: string
+          fun_fact: string | null
+          id: string
+          location_id: string
+          story_text: string
+        }
+        Insert: {
+          created_at?: string
+          fun_fact?: string | null
+          id?: string
+          location_id: string
+          story_text: string
+        }
+        Update: {
+          created_at?: string
+          fun_fact?: string | null
+          id?: string
+          location_id?: string
+          story_text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_stories_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: true
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "location_stories_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: true
+            referencedRelation: "locations_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           created_at: string
           description: string | null
           id: string
           image_url: string | null
+          latitude: number | null
+          longitude: number | null
           name: string
           points_reward: number
           qr_code_id: string
@@ -130,6 +264,8 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
           name: string
           points_reward?: number
           qr_code_id: string
@@ -139,6 +275,8 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           points_reward?: number
           qr_code_id?: string
@@ -320,6 +458,41 @@ export type Database = {
             columns: ["quest_id"]
             isOneToOne: false
             referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_quiz_answers: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected_option: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          selected_option: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected_option?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_quiz_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "location_quiz_questions"
             referencedColumns: ["id"]
           },
         ]
