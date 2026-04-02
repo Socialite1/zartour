@@ -115,6 +115,39 @@ export type Database = {
           },
         ]
       }
+      guide_profiles: {
+        Row: {
+          business_name: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_approved: boolean
+          user_id: string
+        }
+        Insert: {
+          business_name: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_approved?: boolean
+          user_id: string
+        }
+        Update: {
+          business_name?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_approved?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       location_feedback: {
         Row: {
           created_at: string
@@ -369,6 +402,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          guide_id: string | null
           icon: string
           id: string
           title: string
@@ -378,6 +412,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          guide_id?: string | null
           icon?: string
           id?: string
           title: string
@@ -387,13 +422,66 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          guide_id?: string | null
           icon?: string
           id?: string
           title?: string
           total_steps?: number
           type?: Database["public"]["Enums"]["quest_type"]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quests_guide_id_fkey"
+            columns: ["guide_id"]
+            isOneToOne: false
+            referencedRelation: "guide_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_bookings: {
+        Row: {
+          booking_date: string
+          created_at: string
+          guide_id: string
+          id: string
+          notes: string | null
+          party_size: number
+          quest_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string
+          guide_id: string
+          id?: string
+          notes?: string | null
+          party_size?: number
+          quest_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string
+          guide_id?: string
+          id?: string
+          notes?: string | null
+          party_size?: number
+          quest_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_bookings_guide_id_fkey"
+            columns: ["guide_id"]
+            isOneToOne: false
+            referencedRelation: "guide_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {

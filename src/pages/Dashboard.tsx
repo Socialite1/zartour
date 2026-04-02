@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2 } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -66,14 +66,22 @@ export default function Dashboard() {
             <p className="text-muted-foreground text-sm">Welcome back,</p>
             <h1 className="font-display text-3xl font-bold">{firstName} 👋</h1>
           </div>
-          {isAdmin && (
-            <Link to="/admin">
+          <div className="flex gap-2">
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </Button>
+              </Link>
+            )}
+            <Link to="/guide">
               <Button variant="outline" size="sm" className="gap-1.5">
-                <Shield className="w-4 h-4" />
-                Admin
+                <Building2 className="w-4 h-4" />
+                Guide
               </Button>
             </Link>
-          )}
+          </div>
         </div>
 
         {/* Stats */}
