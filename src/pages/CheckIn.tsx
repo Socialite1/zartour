@@ -43,7 +43,7 @@ export default function CheckIn() {
   const navigate = useNavigate();
   const qrId = searchParams.get("qr");
 
-  const [step, setStep] = useState<Step>(qrId ? "idle" : "idle");
+  const [step, setStep] = useState<Step>("idle");
   const [location, setLocation] = useState<Location | null>(null);
   const [story, setStory] = useState<Story | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -106,7 +106,6 @@ export default function CheckIn() {
     const score = answers.filter(a => a.correct).length;
     setQuizScore(score);
 
-    // Save answers
     if (user) {
       for (const ans of answers) {
         await supabase.from("user_quiz_answers").insert({
@@ -114,7 +113,7 @@ export default function CheckIn() {
           question_id: ans.questionId,
           selected_option: ans.selected,
           is_correct: ans.correct,
-        }).then(() => {}); // ignore duplicate errors
+        }).then(() => {});
       }
     }
 
@@ -140,7 +139,6 @@ export default function CheckIn() {
         return;
       }
 
-      // Bonus points for quiz performance
       const bonusPoints = quizScore * 5;
       const totalPoints = location.points_reward + bonusPoints;
 
@@ -158,7 +156,7 @@ export default function CheckIn() {
         location_id: location.id,
         rating,
         feedback_text: feedbackText || null,
-      }).then(() => {}); // ignore duplicate
+      }).then(() => {});
 
       // Update points
       const { data: currentProfile } = await supabase
@@ -222,12 +220,10 @@ export default function CheckIn() {
     setSearchParams({});
   };
 
-  // QR Scanner overlay
   if (showScanner) {
     return <QrScanner onScan={handleScan} onClose={() => setShowScanner(false)} />;
   }
 
-  // Success screen
   if (step === "success" && location) {
     return (
       <AppLayout>
@@ -242,12 +238,13 @@ export default function CheckIn() {
               <p className="text-muted-foreground mt-1">points earned</p>
               {quizScore > 0 && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Includes +{quizScore * 5} quiz bonus ({quizScore}/3 correct)
+                  Includes +{quizScore * 5} quiz bonus ({quizScore}/{questions.length} correct)
                 </p>
               )}
             </div>
             <div className="flex gap-2 justify-center pt-4">
               <Button onClick={resetFlow} variant="outline">Scan Another</Button>
+              <Button onClick={() => navigate("/feed")} variant="outline">View Feed</Button>
               <ShareButton
                 title={`I checked in at ${location.name}!`}
                 text={`Just earned ${pointsEarned} points at ${location.name} on Zartour! 🗺️`}
@@ -260,21 +257,14 @@ export default function CheckIn() {
     );
   }
 
-  // Story step
   if (step === "story" && story && location) {
     return (
       <AppLayout>
-        <LocationStory
-          locationName={location.name}
-          storyText={story.story_text}
-          funFact={story.fun_fact}
-          onContinue={handleStoryComplete}
-        />
+        <LocationStory locationName={location.name} storyText={story.story_text} funFact={story.fun_fact} onContinue={handleStoryComplete} />
       </AppLayout>
     );
   }
 
-  // Quiz step
   if (step === "quiz" && questions.length > 0) {
     return (
       <AppLayout>
@@ -283,20 +273,14 @@ export default function CheckIn() {
     );
   }
 
-  // Feedback step
   if (step === "feedback" && location) {
     return (
       <AppLayout>
-        <LocationFeedback
-          locationName={location.name}
-          onSubmit={handleFeedbackSubmit}
-          loading={loading}
-        />
+        <LocationFeedback locationName={location.name} onSubmit={handleFeedbackSubmit} loading={loading} />
       </AppLayout>
     );
   }
 
-  // Error state
   if (error) {
     return (
       <AppLayout>
@@ -314,7 +298,6 @@ export default function CheckIn() {
     );
   }
 
-  // Loading location
   if (qrId && !location && !error) {
     return (
       <AppLayout>
@@ -325,7 +308,6 @@ export default function CheckIn() {
     );
   }
 
-  // Default: prompt to scan
   return (
     <AppLayout>
       <div className="p-4 flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">

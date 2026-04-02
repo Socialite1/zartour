@@ -24,11 +24,11 @@ export default function Feed() {
   const { user, profile } = useAuth();
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [totalPoints, setTotalPoints] = useState(0);
-  const [totalCheckins, setTotalCheckins] = useState(0);
   const [badgeCount, setBadgeCount] = useState(0);
+  const [checkinCount, setCheckinCount] = useState(0);
 
   const loadFeed = async () => {
+    // Load ALL checkins (not just current user's) to show full activity
     const { data: checkins } = await supabase
       .from("checkins")
       .select(`
@@ -37,21 +37,20 @@ export default function Feed() {
         locations!checkins_location_id_fkey(name)
       `)
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(100);
 
     if (!checkins) { setLoading(false); return; }
 
-    // Load stats
     if (user) {
-      const [pointsRes, badgesRes] = await Promise.all([
-        supabase.from("profiles").select("points").eq("user_id", user.id).single(),
+      const [badgesRes, checkinCountRes] = await Promise.all([
         supabase.from("user_badges").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("checkins").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
-      setTotalPoints(pointsRes.data?.points ?? 0);
       setBadgeCount(badgesRes.count ?? 0);
-      setTotalCheckins(checkins.filter((c: any) => true).length); // total from feed
+      setCheckinCount(checkinCountRes.count ?? 0);
     }
 
+    // Batch like counts
     const feedItems: FeedItem[] = [];
     for (const c of checkins) {
       const { count } = await supabase
@@ -115,7 +114,7 @@ export default function Feed() {
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2">
           <h1 className="font-display text-2xl font-bold">Activity Feed</h1>
-          <p className="text-muted-foreground text-sm">Your check-ins and discoveries</p>
+          <p className="text-muted-foreground text-sm">All check-ins and discoveries</p>
         </div>
 
         {/* Points Summary */}
@@ -124,14 +123,14 @@ export default function Feed() {
             <Card className="bg-primary text-primary-foreground">
               <CardContent className="p-3 text-center">
                 <Sparkles className="w-4 h-4 mx-auto mb-0.5" />
-                <p className="text-xl font-display font-bold">{profile?.points ?? totalPoints}</p>
+                <p className="text-xl font-display font-bold">{profile?.points ?? 0}</p>
                 <p className="text-[10px] opacity-80">Points</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-3 text-center">
                 <MapPin className="w-4 h-4 mx-auto mb-0.5 text-secondary" />
-                <p className="text-xl font-display font-bold">{items.length}</p>
+                <p className="text-xl font-display font-bold">{checkinCount}</p>
                 <p className="text-[10px] text-muted-foreground">Check-ins</p>
               </CardContent>
             </Card>
@@ -149,7 +148,7 @@ export default function Feed() {
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
               <Card key={i} className="animate-pulse">
-                <CardContent className="p-4 h-48" />
+                <CardContent className="p-4 h-32" />
               </Card>
             ))}
           </div>
@@ -194,6 +193,14 @@ export default function Feed() {
                       </span>
                     </button>
                     <span className="text-xs text-secondary font-medium">+{item.points_earned} pts</span>
+                    <div className="ml-auto">
+                      <ShareButton
+                        title={`Check-in at ${item.locations?.name}`}
+                        text={`${item.profiles?.full_name} checked in at ${item.locations?.name} and earned ${item.points_earned} points on Zartour!`}
+                        url={window.location.origin}
+                        size="sm"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
