@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2 } from "lucide-react";
 
 interface Quest {
   id: string;
