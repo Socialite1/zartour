@@ -386,6 +386,34 @@ export default function GuideDashboard() {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="stays" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button onClick={() => setAccomDialogOpen(true)} size="sm" className="gap-1.5">
+                <Plus className="w-4 h-4" /> Add Accommodation
+              </Button>
+            </div>
+            {myAccommodations.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Bed className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-muted-foreground">No accommodations yet. Add your first one!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {myAccommodations.map((a: any) => (
+                  <Card key={a.id}>
+                    <CardContent className="p-4">
+                      <h3 className="font-display font-semibold">{a.name}</h3>
+                      <p className="text-xs text-muted-foreground">{a.type} • {a.price_range || "Price TBD"}</p>
+                      {a.address && <p className="text-xs text-muted-foreground mt-1">{a.address}</p>}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
 
