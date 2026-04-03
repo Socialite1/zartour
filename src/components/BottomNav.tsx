@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { Home, QrCode, Trophy, User, Compass } from "lucide-react";
+import { Home, QrCode, Trophy, User, Search } from "lucide-react";
 
 const navItems = [
   { to: "/", icon: Home, label: "Home" },
-  { to: "/feed", icon: Compass, label: "Feed" },
+  { to: "/explore", icon: Search, label: "Explore" },
   { to: "/checkin", icon: QrCode, label: "Check In" },
   { to: "/leaderboard", icon: Trophy, label: "Ranks" },
   { to: "/profile", icon: User, label: "Profile" },
