@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2 } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search } from "lucide-react";
 
 interface Quest {
   id: string;
@@ -119,6 +119,21 @@ export default function Dashboard() {
               <div className="flex-1">
                 <p className="font-display font-bold text-lg">Scan & Check In</p>
                 <p className="text-sm opacity-80">Visit a location to earn points</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Explore CTA */}
+        <Link to="/explore">
+          <Card className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:opacity-95 transition-opacity cursor-pointer">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-secondary-foreground/20 flex items-center justify-center">
+                <Search className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <p className="font-display font-bold">Explore & Book</p>
+                <p className="text-sm opacity-80">Tours, stays & experiences</p>
               </div>
             </CardContent>
           </Card>

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock } from "lucide-react";
+import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock, Bed } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface GuideProfile {
@@ -48,7 +48,18 @@ interface Location {
   name: string;
 }
 
+interface AccommodationForm {
+  name: string;
+  description: string;
+  type: string;
+  price_range: string;
+  address: string;
+  contact_phone: string;
+  contact_email: string;
+}
+
 const QUEST_TYPES = ["astrology", "ikigai", "human_design", "economical", "religious", "political"];
+const ACCOM_TYPES = ["lodge", "hotel", "guesthouse", "bnb", "cultural_stay"];
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -58,7 +69,9 @@ export default function GuideDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
+  const [accomDialogOpen, setAccomDialogOpen] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
+  const [myAccommodations, setMyAccommodations] = useState<any[]>([]);
 
   // Form state for guide profile
   const [businessName, setBusinessName] = useState("");
@@ -72,6 +85,11 @@ export default function GuideDashboard() {
   const [questType, setQuestType] = useState("economical");
   const [questIcon, setQuestIcon] = useState("🗺️");
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+
+  // Form state for accommodation
+  const [accomForm, setAccomForm] = useState<AccommodationForm>({
+    name: "", description: "", type: "lodge", price_range: "", address: "", contact_phone: "", contact_email: ""
+  });
 
   useEffect(() => {
     loadData();
@@ -89,13 +107,15 @@ export default function GuideDashboard() {
     if (gp) {
       setGuideProfile(gp);
       
-      const [questsRes, bookingsRes] = await Promise.all([
+      const [questsRes, bookingsRes, accomRes] = await Promise.all([
         supabase.from("quests").select("*").eq("guide_id", gp.id),
         supabase.from("tour_bookings").select("*").eq("guide_id", gp.id).order("created_at", { ascending: false }),
+        supabase.from("accommodations").select("*").eq("guide_id", gp.id),
       ]);
       
       if (questsRes.data) setMyQuests(questsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data as any);
+      if (accomRes.data) setMyAccommodations(accomRes.data);
     } else {
       setSetupMode(true);
     }
@@ -175,6 +195,28 @@ export default function GuideDashboard() {
   const updateBookingStatus = async (bookingId: string, status: string) => {
     await supabase.from("tour_bookings").update({ status }).eq("id", bookingId);
     toast.success(`Booking ${status}`);
+    loadData();
+  };
+
+  const handleCreateAccom = async () => {
+    if (!guideProfile || !accomForm.name.trim()) {
+      toast.error("Accommodation name is required");
+      return;
+    }
+    const { error } = await supabase.from("accommodations").insert({
+      name: accomForm.name.trim(),
+      description: accomForm.description.trim() || null,
+      type: accomForm.type,
+      price_range: accomForm.price_range.trim() || null,
+      address: accomForm.address.trim() || null,
+      contact_phone: accomForm.contact_phone.trim() || null,
+      contact_email: accomForm.contact_email.trim() || null,
+      guide_id: guideProfile.id,
+    });
+    if (error) { toast.error("Failed to add accommodation"); return; }
+    toast.success("Accommodation added!");
+    setAccomDialogOpen(false);
+    setAccomForm({ name: "", description: "", type: "lodge", price_range: "", address: "", contact_phone: "", contact_email: "" });
     loadData();
   };
 
@@ -269,6 +311,9 @@ export default function GuideDashboard() {
             <TabsTrigger value="bookings" className="flex-1 gap-1.5">
               <Calendar className="w-4 h-4" /> Bookings
             </TabsTrigger>
+            <TabsTrigger value="stays" className="flex-1 gap-1.5">
+              <Bed className="w-4 h-4" /> Stays
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="quests" className="space-y-4 mt-4">
@@ -335,6 +380,34 @@ export default function GuideDashboard() {
                           <Button size="sm" variant="outline" onClick={() => updateBookingStatus(booking.id, "cancelled")} className="flex-1">Decline</Button>
                         </div>
                       )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="stays" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button onClick={() => setAccomDialogOpen(true)} size="sm" className="gap-1.5">
+                <Plus className="w-4 h-4" /> Add Accommodation
+              </Button>
+            </div>
+            {myAccommodations.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Bed className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-muted-foreground">No accommodations yet. Add your first one!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {myAccommodations.map((a: any) => (
+                  <Card key={a.id}>
+                    <CardContent className="p-4">
+                      <h3 className="font-display font-semibold">{a.name}</h3>
+                      <p className="text-xs text-muted-foreground">{a.type} • {a.price_range || "Price TBD"}</p>
+                      {a.address && <p className="text-xs text-muted-foreground mt-1">{a.address}</p>}
                     </CardContent>
                   </Card>
                 ))}
@@ -408,6 +481,56 @@ export default function GuideDashboard() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuestDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleCreateQuest}>Create Quest</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Accommodation Dialog */}
+      <Dialog open={accomDialogOpen} onOpenChange={setAccomDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display">Add Accommodation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Name *</Label>
+              <Input value={accomForm.name} onChange={e => setAccomForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Mphahlele Guest House" />
+            </div>
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={accomForm.type} onValueChange={v => setAccomForm(f => ({ ...f, type: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {ACCOM_TYPES.map(t => <SelectItem key={t} value={t}>{t.replace("_", " ")}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Price Range</Label>
+              <Input value={accomForm.price_range} onChange={e => setAccomForm(f => ({ ...f, price_range: e.target.value }))} placeholder="e.g. R350 - R600/night" />
+            </div>
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input value={accomForm.address} onChange={e => setAccomForm(f => ({ ...f, address: e.target.value }))} placeholder="Physical address" />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea value={accomForm.description} onChange={e => setAccomForm(f => ({ ...f, description: e.target.value }))} rows={2} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input value={accomForm.contact_phone} onChange={e => setAccomForm(f => ({ ...f, contact_phone: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={accomForm.contact_email} onChange={e => setAccomForm(f => ({ ...f, contact_email: e.target.value }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAccomDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateAccom}>Add Accommodation</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
