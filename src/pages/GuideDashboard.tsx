@@ -311,6 +311,9 @@ export default function GuideDashboard() {
             <TabsTrigger value="bookings" className="flex-1 gap-1.5">
               <Calendar className="w-4 h-4" /> Bookings
             </TabsTrigger>
+            <TabsTrigger value="stays" className="flex-1 gap-1.5">
+              <Bed className="w-4 h-4" /> Stays
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="quests" className="space-y-4 mt-4">
