@@ -14,6 +14,106 @@ export type Database = {
   }
   public: {
     Tables: {
+      accommodation_bookings: {
+        Row: {
+          accommodation_id: string
+          check_in_date: string
+          check_out_date: string
+          created_at: string
+          guests: number
+          id: string
+          notes: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          accommodation_id: string
+          check_in_date: string
+          check_out_date: string
+          created_at?: string
+          guests?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          accommodation_id?: string
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string
+          guests?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accommodation_bookings_accommodation_id_fkey"
+            columns: ["accommodation_id"]
+            isOneToOne: false
+            referencedRelation: "accommodations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      accommodations: {
+        Row: {
+          address: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          guide_id: string | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          price_range: string | null
+          type: string
+        }
+        Insert: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          guide_id?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          price_range?: string | null
+          type?: string
+        }
+        Update: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          guide_id?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          price_range?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accommodations_guide_id_fkey"
+            columns: ["guide_id"]
+            isOneToOne: false
+            referencedRelation: "guide_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badges: {
         Row: {
           created_at: string
