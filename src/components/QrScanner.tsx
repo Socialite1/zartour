@@ -14,6 +14,9 @@ export default function QrScanner({ onScan, onClose }: QrScannerProps) {
   const containerRef = useRef<string>("qr-reader-" + Date.now());
 
   useEffect(() => {
+    let stopped = false;
+    const onScanRef = onScan;
+
     const startScanner = async () => {
       try {
         const scanner = new Html5Qrcode(containerRef.current);
@@ -21,36 +24,49 @@ export default function QrScanner({ onScan, onClose }: QrScannerProps) {
 
         await scanner.start(
           { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText) => {
+          {
+            fps: 15,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            disableFlip: false,
+          },
+          async (decodedText) => {
+            if (stopped) return;
+            stopped = true;
+            // Stop scanner before processing to prevent duplicate scans
+            try {
+              await scanner.stop();
+            } catch {}
+
             // Extract QR param from URL or use raw text
+            let result = decodedText;
             try {
               const url = new URL(decodedText);
               const qr = url.searchParams.get("qr");
-              if (qr) {
-                onScan(qr);
-                return;
-              }
+              if (qr) result = qr;
             } catch {
-              // Not a URL
+              // Not a URL, use raw text
             }
-            onScan(decodedText);
+            onScanRef(result);
           },
-          () => {} // ignore failures
+          () => {} // ignore scan failures
         );
       } catch (err: any) {
-        setError("Camera access denied or not available. Please allow camera permissions.");
+        console.error("QR Scanner error:", err);
+        setError("Camera access denied or not available. Please allow camera permissions and reload.");
       }
     };
 
     startScanner();
 
     return () => {
+      stopped = true;
       if (scannerRef.current?.isScanning) {
         scannerRef.current.stop().catch(() => {});
       }
     };
-  }, [onScan]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center">
