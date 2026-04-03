@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock } from "lucide-react";
+import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock, Bed } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface GuideProfile {
