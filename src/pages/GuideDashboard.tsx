@@ -48,7 +48,18 @@ interface Location {
   name: string;
 }
 
+interface AccommodationForm {
+  name: string;
+  description: string;
+  type: string;
+  price_range: string;
+  address: string;
+  contact_phone: string;
+  contact_email: string;
+}
+
 const QUEST_TYPES = ["astrology", "ikigai", "human_design", "economical", "religious", "political"];
+const ACCOM_TYPES = ["lodge", "hotel", "guesthouse", "bnb", "cultural_stay"];
 
 export default function GuideDashboard() {
   const { user } = useAuth();
