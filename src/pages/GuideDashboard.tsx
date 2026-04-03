@@ -69,7 +69,9 @@ export default function GuideDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
+  const [accomDialogOpen, setAccomDialogOpen] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
+  const [myAccommodations, setMyAccommodations] = useState<any[]>([]);
 
   // Form state for guide profile
   const [businessName, setBusinessName] = useState("");
