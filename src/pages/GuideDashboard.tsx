@@ -107,13 +107,15 @@ export default function GuideDashboard() {
     if (gp) {
       setGuideProfile(gp);
       
-      const [questsRes, bookingsRes] = await Promise.all([
+      const [questsRes, bookingsRes, accomRes] = await Promise.all([
         supabase.from("quests").select("*").eq("guide_id", gp.id),
         supabase.from("tour_bookings").select("*").eq("guide_id", gp.id).order("created_at", { ascending: false }),
+        supabase.from("accommodations").select("*").eq("guide_id", gp.id),
       ]);
       
       if (questsRes.data) setMyQuests(questsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data as any);
+      if (accomRes.data) setMyAccommodations(accomRes.data);
     } else {
       setSetupMode(true);
     }
