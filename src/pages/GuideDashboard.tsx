@@ -484,6 +484,56 @@ export default function GuideDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Accommodation Dialog */}
+      <Dialog open={accomDialogOpen} onOpenChange={setAccomDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display">Add Accommodation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Name *</Label>
+              <Input value={accomForm.name} onChange={e => setAccomForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Mphahlele Guest House" />
+            </div>
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={accomForm.type} onValueChange={v => setAccomForm(f => ({ ...f, type: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {ACCOM_TYPES.map(t => <SelectItem key={t} value={t}>{t.replace("_", " ")}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Price Range</Label>
+              <Input value={accomForm.price_range} onChange={e => setAccomForm(f => ({ ...f, price_range: e.target.value }))} placeholder="e.g. R350 - R600/night" />
+            </div>
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input value={accomForm.address} onChange={e => setAccomForm(f => ({ ...f, address: e.target.value }))} placeholder="Physical address" />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea value={accomForm.description} onChange={e => setAccomForm(f => ({ ...f, description: e.target.value }))} rows={2} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input value={accomForm.contact_phone} onChange={e => setAccomForm(f => ({ ...f, contact_phone: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={accomForm.contact_email} onChange={e => setAccomForm(f => ({ ...f, contact_email: e.target.value }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAccomDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateAccom}>Add Accommodation</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
