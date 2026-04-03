@@ -198,6 +198,28 @@ export default function GuideDashboard() {
     loadData();
   };
 
+  const handleCreateAccom = async () => {
+    if (!guideProfile || !accomForm.name.trim()) {
+      toast.error("Accommodation name is required");
+      return;
+    }
+    const { error } = await supabase.from("accommodations").insert({
+      name: accomForm.name.trim(),
+      description: accomForm.description.trim() || null,
+      type: accomForm.type,
+      price_range: accomForm.price_range.trim() || null,
+      address: accomForm.address.trim() || null,
+      contact_phone: accomForm.contact_phone.trim() || null,
+      contact_email: accomForm.contact_email.trim() || null,
+      guide_id: guideProfile.id,
+    });
+    if (error) { toast.error("Failed to add accommodation"); return; }
+    toast.success("Accommodation added!");
+    setAccomDialogOpen(false);
+    setAccomForm({ name: "", description: "", type: "lodge", price_range: "", address: "", contact_phone: "", contact_email: "" });
+    loadData();
+  };
+
   const toggleLocation = (locId: string) => {
     setSelectedLocations(prev =>
       prev.includes(locId) ? prev.filter(id => id !== locId) : [...prev, locId]
