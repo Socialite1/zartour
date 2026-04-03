@@ -86,6 +86,11 @@ export default function GuideDashboard() {
   const [questIcon, setQuestIcon] = useState("🗺️");
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
 
+  // Form state for accommodation
+  const [accomForm, setAccomForm] = useState<AccommodationForm>({
+    name: "", description: "", type: "lodge", price_range: "", address: "", contact_phone: "", contact_email: ""
+  });
+
   useEffect(() => {
     loadData();
   }, [user]);
