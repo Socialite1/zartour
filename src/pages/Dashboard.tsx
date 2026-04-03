@@ -124,6 +124,21 @@ export default function Dashboard() {
           </Card>
         </Link>
 
+        {/* Explore CTA */}
+        <Link to="/explore">
+          <Card className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:opacity-95 transition-opacity cursor-pointer">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-secondary-foreground/20 flex items-center justify-center">
+                <Search className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <p className="font-display font-bold">Explore & Book</p>
+                <p className="text-sm opacity-80">Tours, stays & experiences</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         {/* Badges */}
         <div>
           <div className="flex items-center justify-between mb-3">
