@@ -196,15 +196,9 @@ export default function Explore() {
                     <p className="text-sm text-muted-foreground">{tour.description}</p>
                   )}
                   <div className="flex gap-2">
-                    {tour.guide_id ? (
-                      <Button size="sm" className="flex-1" onClick={() => setBookingTour(tour)}>
-                        <Calendar className="w-4 h-4 mr-1.5" /> Book Tour
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" className="flex-1" disabled>
-                        Self-guided
-                      </Button>
-                    )}
+                    <Button size="sm" className="flex-1" onClick={() => setBookingTour(tour)}>
+                      <Calendar className="w-4 h-4 mr-1.5" /> Book Tour
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
