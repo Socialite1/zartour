@@ -82,10 +82,6 @@ export default function Explore() {
       toast.error("Please select a date");
       return;
     }
-    if (!bookingTour.guide_id) {
-      toast.error("This quest doesn't have a guide to book with");
-      return;
-    }
 
     const { error } = await supabase.from("tour_bookings").insert({
       user_id: user.id,
