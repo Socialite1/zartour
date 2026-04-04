@@ -19,7 +19,7 @@ interface GuideTour {
   icon: string;
   total_steps: number;
   type: string;
-  guide_id: string | null;
+  guide_id: string;
   guide_name?: string;
 }
 
