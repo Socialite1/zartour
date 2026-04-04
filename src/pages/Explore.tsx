@@ -19,7 +19,7 @@ interface GuideTour {
   icon: string;
   total_steps: number;
   type: string;
-  guide_id: string | null;
+  guide_id: string;
   guide_name?: string;
 }
 
@@ -80,10 +80,6 @@ export default function Explore() {
   const handleBookTour = async () => {
     if (!user || !bookingTour || !bookingDate) {
       toast.error("Please select a date");
-      return;
-    }
-    if (!bookingTour.guide_id) {
-      toast.error("This quest doesn't have a guide to book with");
       return;
     }
 
@@ -196,15 +192,9 @@ export default function Explore() {
                     <p className="text-sm text-muted-foreground">{tour.description}</p>
                   )}
                   <div className="flex gap-2">
-                    {tour.guide_id ? (
-                      <Button size="sm" className="flex-1" onClick={() => setBookingTour(tour)}>
-                        <Calendar className="w-4 h-4 mr-1.5" /> Book Tour
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" className="flex-1" disabled>
-                        Self-guided
-                      </Button>
-                    )}
+                    <Button size="sm" className="flex-1" onClick={() => setBookingTour(tour)}>
+                      <Calendar className="w-4 h-4 mr-1.5" /> Book Tour
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

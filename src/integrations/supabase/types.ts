@@ -502,7 +502,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
-          guide_id: string | null
+          guide_id: string
           icon: string
           id: string
           title: string
@@ -512,7 +512,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
-          guide_id?: string | null
+          guide_id: string
           icon?: string
           id?: string
           title: string
@@ -522,7 +522,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
-          guide_id?: string | null
+          guide_id?: string
           icon?: string
           id?: string
           title?: string
