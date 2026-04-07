@@ -124,6 +124,47 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Passport – Quest Locations */}
+        {passport.length > 0 && (
+          <div>
+            <h2 className="font-display text-lg font-bold mb-3">🗺️ Passport</h2>
+            <p className="text-xs text-muted-foreground mb-2">
+              {passport.filter(p => p.visited).length}/{passport.length} quest locations visited
+            </p>
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden mb-3">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${(passport.filter(p => p.visited).length / passport.length) * 100}%` }}
+              />
+            </div>
+            <div className="space-y-2">
+              {passport.map((loc) => (
+                <div
+                  key={loc.id}
+                  className={`flex items-center gap-3 p-3 rounded-lg ${
+                    loc.visited ? "bg-green-500/10" : "bg-muted/50"
+                  }`}
+                >
+                  {loc.visited ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                  ) : (
+                    <Circle className="w-4 h-4 text-muted-foreground shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium ${loc.visited ? "text-green-700" : ""}`}>{loc.name}</p>
+                    {loc.quest_task && <p className="text-[11px] text-muted-foreground">{loc.quest_task}</p>}
+                  </div>
+                  {loc.quest_reward && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground whitespace-nowrap">
+                      {loc.quest_reward}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Places Visited */}
         <div>
           <h2 className="font-display text-lg font-bold mb-3">Places Visited</h2>
