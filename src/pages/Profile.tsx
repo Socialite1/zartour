@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LogOut, MapPin, Sparkles, Trophy } from "lucide-react";
+import { LogOut, MapPin, Sparkles, Trophy, CheckCircle2, Circle } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 
 interface Badge {
@@ -21,24 +21,45 @@ interface CheckinItem {
   locations: { name: string };
 }
 
+interface QuestLocation {
+  id: string;
+  name: string;
+  quest_task: string | null;
+  quest_reward: string | null;
+  visited: boolean;
+}
+
 export default function Profile() {
   const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [allBadges, setAllBadges] = useState<Badge[]>([]);
   const [checkins, setCheckins] = useState<CheckinItem[]>([]);
+  const [passport, setPassport] = useState<QuestLocation[]>([]);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const [ubRes, abRes, cRes] = await Promise.all([
+      const [ubRes, abRes, cRes, qlRes, ciRes] = await Promise.all([
         supabase.from("user_badges").select("badges(*)").eq("user_id", user.id),
         supabase.from("badges").select("*").order("required_checkins"),
         supabase.from("checkins").select("id, created_at, locations(name)").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("locations").select("id, name, quest_task, quest_reward").eq("quest_enabled", true),
+        supabase.from("checkins").select("location_id").eq("user_id", user.id),
       ]);
       if (ubRes.data) setBadges(ubRes.data.map((d: any) => d.badges));
       if (abRes.data) setAllBadges(abRes.data);
       if (cRes.data) setCheckins(cRes.data as any);
+
+      if (qlRes.data && ciRes.data) {
+        const visitedIds = new Set(ciRes.data.map((c: any) => c.location_id));
+        setPassport(
+          qlRes.data.map((loc: any) => ({
+            ...loc,
+            visited: visitedIds.has(loc.id),
+          }))
+        );
+      }
     };
     load();
   }, [user]);
