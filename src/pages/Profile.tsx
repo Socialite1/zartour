@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LogOut, MapPin, Sparkles, Trophy } from "lucide-react";
+import { LogOut, MapPin, Sparkles, Trophy, CheckCircle2, Circle } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 
 interface Badge {
@@ -21,24 +21,45 @@ interface CheckinItem {
   locations: { name: string };
 }
 
+interface QuestLocation {
+  id: string;
+  name: string;
+  quest_task: string | null;
+  quest_reward: string | null;
+  visited: boolean;
+}
+
 export default function Profile() {
   const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [allBadges, setAllBadges] = useState<Badge[]>([]);
   const [checkins, setCheckins] = useState<CheckinItem[]>([]);
+  const [passport, setPassport] = useState<QuestLocation[]>([]);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const [ubRes, abRes, cRes] = await Promise.all([
+      const [ubRes, abRes, cRes, qlRes, ciRes] = await Promise.all([
         supabase.from("user_badges").select("badges(*)").eq("user_id", user.id),
         supabase.from("badges").select("*").order("required_checkins"),
         supabase.from("checkins").select("id, created_at, locations(name)").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("locations").select("id, name, quest_task, quest_reward").eq("quest_enabled", true),
+        supabase.from("checkins").select("location_id").eq("user_id", user.id),
       ]);
       if (ubRes.data) setBadges(ubRes.data.map((d: any) => d.badges));
       if (abRes.data) setAllBadges(abRes.data);
       if (cRes.data) setCheckins(cRes.data as any);
+
+      if (qlRes.data && ciRes.data) {
+        const visitedIds = new Set(ciRes.data.map((c: any) => c.location_id));
+        setPassport(
+          qlRes.data.map((loc: any) => ({
+            ...loc,
+            visited: visitedIds.has(loc.id),
+          }))
+        );
+      }
     };
     load();
   }, [user]);
@@ -102,6 +123,47 @@ export default function Profile() {
             })}
           </div>
         </div>
+
+        {/* Passport – Quest Locations */}
+        {passport.length > 0 && (
+          <div>
+            <h2 className="font-display text-lg font-bold mb-3">🗺️ Passport</h2>
+            <p className="text-xs text-muted-foreground mb-2">
+              {passport.filter(p => p.visited).length}/{passport.length} quest locations visited
+            </p>
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden mb-3">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${(passport.filter(p => p.visited).length / passport.length) * 100}%` }}
+              />
+            </div>
+            <div className="space-y-2">
+              {passport.map((loc) => (
+                <div
+                  key={loc.id}
+                  className={`flex items-center gap-3 p-3 rounded-lg ${
+                    loc.visited ? "bg-green-500/10" : "bg-muted/50"
+                  }`}
+                >
+                  {loc.visited ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                  ) : (
+                    <Circle className="w-4 h-4 text-muted-foreground shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium ${loc.visited ? "text-green-700" : ""}`}>{loc.name}</p>
+                    {loc.quest_task && <p className="text-[11px] text-muted-foreground">{loc.quest_task}</p>}
+                  </div>
+                  {loc.quest_reward && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground whitespace-nowrap">
+                      {loc.quest_reward}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Places Visited */}
         <div>

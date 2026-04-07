@@ -382,6 +382,7 @@ export type Database = {
       }
       locations: {
         Row: {
+          checkin_type: string
           created_at: string
           description: string | null
           id: string
@@ -391,8 +392,13 @@ export type Database = {
           name: string
           points_reward: number
           qr_code_id: string
+          quest_enabled: boolean
+          quest_reward: string | null
+          quest_task: string | null
+          time_restriction: string | null
         }
         Insert: {
+          checkin_type?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -402,8 +408,13 @@ export type Database = {
           name: string
           points_reward?: number
           qr_code_id: string
+          quest_enabled?: boolean
+          quest_reward?: string | null
+          quest_task?: string | null
+          time_restriction?: string | null
         }
         Update: {
+          checkin_type?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -413,6 +424,10 @@ export type Database = {
           name?: string
           points_reward?: number
           qr_code_id?: string
+          quest_enabled?: boolean
+          quest_reward?: string | null
+          quest_task?: string | null
+          time_restriction?: string | null
         }
         Relationships: []
       }
