@@ -431,6 +431,30 @@ export type Database = {
         }
         Relationships: []
       }
+      point_rewards: {
+        Row: {
+          created_at: string
+          id: string
+          points_threshold: number
+          reward_description: string | null
+          reward_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points_threshold: number
+          reward_description?: string | null
+          reward_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points_threshold?: number
+          reward_description?: string | null
+          reward_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -696,6 +720,41 @@ export type Database = {
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "location_quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_reward_claims: {
+        Row: {
+          claimed_at: string
+          id: string
+          reward_choice: string
+          reward_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          id?: string
+          reward_choice: string
+          reward_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          id?: string
+          reward_choice?: string
+          reward_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_reward_claims_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "point_rewards"
             referencedColumns: ["id"]
           },
         ]
