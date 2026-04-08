@@ -1,21 +1,23 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
-import Onboarding from "./pages/Onboarding";
-import CheckIn from "./pages/CheckIn";
-import Feed from "./pages/Feed";
-import Leaderboard from "./pages/Leaderboard";
-import Profile from "./pages/Profile";
-import Quests from "./pages/Quests";
-import Admin from "./pages/Admin";
-import GuideDashboard from "./pages/GuideDashboard";
-import Explore from "./pages/Explore";
-import NotFound from "./pages/NotFound";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const CheckIn = lazy(() => import("./pages/CheckIn"));
+const Feed = lazy(() => import("./pages/Feed"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Quests = lazy(() => import("./pages/Quests"));
+const Admin = lazy(() => import("./pages/Admin"));
+const GuideDashboard = lazy(() => import("./pages/GuideDashboard"));
+const Explore = lazy(() => import("./pages/Explore"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
