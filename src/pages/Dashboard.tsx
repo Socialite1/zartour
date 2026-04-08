@@ -7,6 +7,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search } from "lucide-react";
+import RewardClaimBanner from "@/components/RewardClaimBanner";
 
 interface Quest {
   id: string;
