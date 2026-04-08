@@ -85,6 +85,9 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Reward Banner */}
+        <RewardClaimBanner />
+
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           <Card className="bg-primary text-primary-foreground">
