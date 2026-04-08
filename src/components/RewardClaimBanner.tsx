@@ -89,9 +89,9 @@ export default function RewardClaimBanner() {
   if (claimed) {
     const chosenOption = REWARD_OPTIONS.find(o => o.key === claimed);
     return (
-      <Card className="border-green-500/30 bg-green-500/5">
+      <Card className="border-accent/30 bg-accent/5">
         <CardContent className="p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium">
               🎁 You claimed: <span className="font-bold">{chosenOption?.label ?? claimed}</span>
