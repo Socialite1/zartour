@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, MapPin, Navigation, ExternalLink } from "lucide-react";
+import { Sparkles, CheckCircle2, MapPin, Navigation, ExternalLink, TreePine } from "lucide-react";
+import { QUEST_ID as TEN_PATHS_QUEST_ID } from "@/components/quest-paths/pathData";
 
 interface Quest {
   id: string;
@@ -33,6 +35,7 @@ interface QuestLocation {
 
 export default function Quests() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [userQuests, setUserQuests] = useState<UserQuest[]>([]);
   const [questLocations, setQuestLocations] = useState<QuestLocation[]>([]);
@@ -204,7 +207,15 @@ export default function Quests() {
                     </Button>
                   )}
 
-                  {!started ? (
+                  {!started && quest.id === TEN_PATHS_QUEST_ID ? (
+                    <Button onClick={() => navigate("/quest-path")} className="w-full" size="sm">
+                      <TreePine className="w-4 h-4 mr-2" /> Enter The 10 Paths
+                    </Button>
+                  ) : started && quest.id === TEN_PATHS_QUEST_ID ? (
+                    <Button onClick={() => navigate("/quest-path")} variant="outline" className="w-full" size="sm">
+                      <TreePine className="w-4 h-4 mr-2" /> Continue Journey
+                    </Button>
+                  ) : !started ? (
                     <Button onClick={() => startQuest(quest.id)} className="w-full" size="sm">
                       <Sparkles className="w-4 h-4 mr-2" /> Begin Quest
                     </Button>
