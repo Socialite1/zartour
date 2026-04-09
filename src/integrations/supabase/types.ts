@@ -537,6 +537,39 @@ export type Database = {
           },
         ]
       }
+      quest_path_responses: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          path_number: number
+          quest_id: string
+          response_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          path_number: number
+          quest_id: string
+          response_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          path_number?: number
+          quest_id?: string
+          response_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quests: {
         Row: {
           created_at: string
