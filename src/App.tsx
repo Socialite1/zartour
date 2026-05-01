@@ -18,6 +18,10 @@ const Admin = lazy(() => import("./pages/Admin"));
 const GuideDashboard = lazy(() => import("./pages/GuideDashboard"));
 const Explore = lazy(() => import("./pages/Explore"));
 const QuestPath = lazy(() => import("./pages/QuestPath"));
+const Vote = lazy(() => import("./pages/Vote"));
+const VoteShared = lazy(() => import("./pages/VoteShared"));
+const VoteLeaderboard = lazy(() => import("./pages/VoteLeaderboard"));
+const VoteAdmin = lazy(() => import("./pages/VoteAdmin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -62,6 +66,10 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
               <Route path="/guide" element={<ProtectedRoute><GuideDashboard /></ProtectedRoute>} />
+              <Route path="/vote" element={<Vote />} />
+              <Route path="/vote/shared" element={<VoteShared />} />
+              <Route path="/leaderboard-vote" element={<VoteLeaderboard />} />
+              <Route path="/vote-admin" element={<ProtectedRoute><VoteAdmin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

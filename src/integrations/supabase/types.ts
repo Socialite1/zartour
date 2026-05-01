@@ -611,6 +611,27 @@ export type Database = {
           },
         ]
       }
+      teams: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          display_order: number
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       tour_bookings: {
         Row: {
           booking_date: string
@@ -810,6 +831,48 @@ export type Database = {
         }
         Relationships: []
       }
+      votes: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          ip_address: string | null
+          team_id: string
+          voter_name: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          ip_address?: string | null
+          team_id: string
+          voter_name: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          ip_address?: string | null
+          team_id?: string
+          voter_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_vote_counts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       locations_public: {
@@ -836,6 +899,15 @@ export type Database = {
           image_url?: string | null
           name?: string | null
           points_reward?: number | null
+        }
+        Relationships: []
+      }
+      team_vote_counts: {
+        Row: {
+          display_order: number | null
+          id: string | null
+          name: string | null
+          vote_count: number | null
         }
         Relationships: []
       }
