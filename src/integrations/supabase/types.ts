@@ -406,6 +406,7 @@ export type Database = {
       }
       locations: {
         Row: {
+          category: string | null
           checkin_type: string
           created_at: string
           description: string | null
@@ -422,6 +423,7 @@ export type Database = {
           time_restriction: string | null
         }
         Insert: {
+          category?: string | null
           checkin_type?: string
           created_at?: string
           description?: string | null
@@ -438,6 +440,7 @@ export type Database = {
           time_restriction?: string | null
         }
         Update: {
+          category?: string | null
           checkin_type?: string
           created_at?: string
           description?: string | null
