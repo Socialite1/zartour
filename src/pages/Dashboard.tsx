@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search } from "lucide-react";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
+import DailyLoginBanner from "@/components/DailyLoginBanner";
 
 interface Quest {
   id: string;
@@ -84,6 +85,9 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Daily Login Bonus */}
+        <DailyLoginBanner />
 
         {/* Reward Banner */}
         <RewardClaimBanner />

@@ -215,6 +215,30 @@ export type Database = {
           },
         ]
       }
+      daily_logins: {
+        Row: {
+          created_at: string
+          id: string
+          login_date: string
+          points_awarded: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          points_awarded?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          points_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       guide_profiles: {
         Row: {
           business_name: string
@@ -922,6 +946,7 @@ export type Database = {
         Args: { p_badge_id: string }
         Returns: undefined
       }
+      claim_daily_login_bonus: { Args: never; Returns: Json }
       get_location_by_qr: { Args: { p_qr_code_id: string }; Returns: Json }
       has_role: {
         Args: {
