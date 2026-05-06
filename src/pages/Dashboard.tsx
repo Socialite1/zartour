@@ -133,20 +133,21 @@ export default function Dashboard() {
         </Link>
 
         {/* Limpopo Cup Vote CTA */}
-        <Link to="/vote">
-          <Card className="bg-gradient-to-r from-gold to-amber-500 text-black hover:opacity-95 transition-opacity cursor-pointer border-2 border-gold">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-black/15 flex items-center justify-center">
+        <Card className="bg-gradient-to-r from-gold to-amber-500 text-black border-2 border-gold">
+          <CardContent className="p-4 flex items-center gap-3">
+            <Link to="/vote" className="flex items-center gap-4 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-black/15 flex items-center justify-center shrink-0">
                 <VoteIcon className="w-5 h-5" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <p className="font-display font-bold">Limpopo Cup Fan Vote</p>
-                <p className="text-sm opacity-80">Pick your champion — 32 teams</p>
+                <p className="text-sm opacity-80 truncate">Pick your champion — 32 teams</p>
               </div>
-              <Link to="/vote-qr" onClick={(e) => e.stopPropagation()} className="text-xs underline whitespace-nowrap">QR</Link>
-            </CardContent>
-          </Card>
-        </Link>
+            </Link>
+            <Link to="/vote-qr" className="text-xs font-bold underline whitespace-nowrap px-2 py-1">QR</Link>
+          </CardContent>
+        </Card>
+
 
         {/* Explore CTA */}
         <Link to="/explore">
