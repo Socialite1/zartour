@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon } from "lucide-react";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
 import DailyLoginBanner from "@/components/DailyLoginBanner";
 
@@ -131,6 +131,23 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </Link>
+
+        {/* Limpopo Cup Vote CTA */}
+        <Card className="bg-gradient-to-r from-gold to-amber-500 text-black border-2 border-gold">
+          <CardContent className="p-4 flex items-center gap-3">
+            <Link to="/vote" className="flex items-center gap-4 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-black/15 flex items-center justify-center shrink-0">
+                <VoteIcon className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold">Limpopo Cup Fan Vote</p>
+                <p className="text-sm opacity-80 truncate">Pick your champion — 32 teams</p>
+              </div>
+            </Link>
+            <Link to="/vote-qr" className="text-xs font-bold underline whitespace-nowrap px-2 py-1">QR</Link>
+          </CardContent>
+        </Card>
+
 
         {/* Explore CTA */}
         <Link to="/explore">
