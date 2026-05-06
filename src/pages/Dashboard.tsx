@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon } from "lucide-react";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
 import DailyLoginBanner from "@/components/DailyLoginBanner";
 
@@ -128,6 +128,22 @@ export default function Dashboard() {
                 <p className="font-display font-bold text-lg">Scan & Check In</p>
                 <p className="text-sm opacity-80">Visit a location to earn points</p>
               </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Limpopo Cup Vote CTA */}
+        <Link to="/vote">
+          <Card className="bg-gradient-to-r from-gold to-amber-500 text-black hover:opacity-95 transition-opacity cursor-pointer border-2 border-gold">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-black/15 flex items-center justify-center">
+                <VoteIcon className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <p className="font-display font-bold">Limpopo Cup Fan Vote</p>
+                <p className="text-sm opacity-80">Pick your champion — 32 teams</p>
+              </div>
+              <Link to="/vote-qr" onClick={(e) => e.stopPropagation()} className="text-xs underline whitespace-nowrap">QR</Link>
             </CardContent>
           </Card>
         </Link>
