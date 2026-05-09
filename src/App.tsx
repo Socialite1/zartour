@@ -22,7 +22,6 @@ const QuestPath = lazy(() => import("./pages/QuestPath"));
 const Vote = lazy(() => import("./pages/Vote"));
 const VoteQr = lazy(() => import("./pages/VoteQr"));
 const VoteShared = lazy(() => import("./pages/VoteShared"));
-const VoteLeaderboard = lazy(() => import("./pages/VoteLeaderboard"));
 const VoteAdmin = lazy(() => import("./pages/VoteAdmin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -72,7 +71,7 @@ const App = () => (
               <Route path="/vote" element={<Vote />} />
               <Route path="/vote-qr" element={<VoteQr />} />
               <Route path="/vote/shared" element={<VoteShared />} />
-              <Route path="/leaderboard-vote" element={<VoteLeaderboard />} />
+              <Route path="/leaderboard-vote" element={<Navigate to="/leaderboard" replace />} />
               <Route path="/vote-admin" element={<ProtectedRoute><VoteAdmin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>

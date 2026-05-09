@@ -1,19 +1,22 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Trophy, Share2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function VoteShared() {
   const [params] = useSearchParams();
+  const { user } = useAuth();
   const team = params.get("team") ?? "your team";
-  const voteUrl = `${window.location.origin}/vote`;
-  const shareText = `🔥 I just voted for ${team} in the Limpopo Cup! Cast your vote now: ${voteUrl}`;
+  const refSuffix = user ? `?ref=${user.id}` : "";
+  const voteUrl = `${window.location.origin}/vote${refSuffix}`;
+  const shareText = `🔥 I just voted for ${team} in Keep Seleteng Alive (Kgomumg)! Cast your vote — and join Zartour to earn points: ${voteUrl}`;
 
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(voteUrl)}&quote=${encodeURIComponent(shareText)}`;
 
   const nativeShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: "Limpopo Cup Vote", text: shareText, url: voteUrl }); } catch {}
+      try { await navigator.share({ title: "Keep Seleteng Alive", text: shareText, url: voteUrl }); } catch {}
     }
   };
 
@@ -26,7 +29,7 @@ export default function VoteShared() {
         <div>
           <p className="text-2xl font-display font-bold">🔥 You voted for</p>
           <p className="text-3xl font-display font-bold text-primary mt-1">{team}!</p>
-          <p className="text-muted-foreground mt-2">Share to boost your team!</p>
+          <p className="text-muted-foreground mt-2">Share to boost your team — earn 10 points for every friend who joins Zartour from your link.</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Button asChild className="bg-[#25D366] hover:bg-[#25D366]/90 text-white">
@@ -43,7 +46,7 @@ export default function VoteShared() {
         )}
         <div className="flex gap-2 pt-2">
           <Button asChild variant="ghost" className="flex-1"><Link to="/vote">Back</Link></Button>
-          <Button asChild variant="default" className="flex-1"><Link to="/leaderboard-vote">Leaderboard</Link></Button>
+          <Button asChild variant="default" className="flex-1"><Link to="/leaderboard">Leaderboard</Link></Button>
         </div>
       </div>
     </div>

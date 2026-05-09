@@ -492,6 +492,7 @@ export type Database = {
           origin: Database["public"]["Enums"]["user_origin"] | null
           phone: string | null
           points: number
+          referred_by: string | null
           updated_at: string
           user_id: string
         }
@@ -504,6 +505,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["user_origin"] | null
           phone?: string | null
           points?: number
+          referred_by?: string | null
           updated_at?: string
           user_id: string
         }
@@ -516,6 +518,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["user_origin"] | null
           phone?: string | null
           points?: number
+          referred_by?: string | null
           updated_at?: string
           user_id?: string
         }
