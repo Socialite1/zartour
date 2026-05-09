@@ -17,6 +17,12 @@ export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
+  // Capture referral code from URL or persisted localStorage
+  const refFromUrl = searchParams.get("ref");
+  if (refFromUrl && typeof window !== "undefined") {
+    localStorage.setItem("zartour_ref", refFromUrl);
+  }
+  const referredBy = refFromUrl || (typeof window !== "undefined" ? localStorage.getItem("zartour_ref") : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +38,7 @@ export default function Auth() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: { data: { full_name: fullName, ...(referredBy ? { referred_by: referredBy } : {}) } },
         });
         if (error) throw error;
         toast.success("Account created! Check your email to verify.");
