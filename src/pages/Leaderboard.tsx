@@ -121,6 +121,15 @@ export default function Leaderboard() {
             <p className="text-xs text-center text-muted-foreground">
               {totalVotes.toLocaleString()} total votes • live updates
             </p>
+            {teams.length > 0 && (
+              <div className="flex justify-center pb-1">
+                <ShareButton
+                  title="Keep Seleteng Alive — Standings"
+                  text={`🏆 Keep Seleteng Alive (Kgomumg) standings:\n${teams.slice(0, 5).map((t, i) => `${medals[i] ?? `#${i + 1}`} ${t.name} — ${t.vote_count} votes`).join("\n")}\n\nVote for your team:`}
+                  url={`${window.location.origin}/vote${user ? `?ref=${user.id}` : ""}`}
+                />
+              </div>
+            )}
             {teams.map((r, i) => {
               const pct = totalVotes > 0 ? (r.vote_count / totalVotes) * 100 : 0;
               const barPct = (r.vote_count / maxVotes) * 100;
