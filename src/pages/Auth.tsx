@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,9 @@ export default function Auth() {
   const redirectTo = searchParams.get("redirect") || "/";
   // Capture referral code from URL or persisted localStorage
   const refFromUrl = searchParams.get("ref");
-  if (refFromUrl && typeof window !== "undefined") {
-    localStorage.setItem("zartour_ref", refFromUrl);
-  }
+  useEffect(() => {
+    if (refFromUrl) localStorage.setItem("zartour_ref", refFromUrl);
+  }, [refFromUrl]);
   const referredBy = refFromUrl || (typeof window !== "undefined" ? localStorage.getItem("zartour_ref") : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
