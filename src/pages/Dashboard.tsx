@@ -7,6 +7,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
 import DailyLoginBanner from "@/components/DailyLoginBanner";
 
@@ -132,7 +133,7 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        {/* Limpopo Cup Vote CTA */}
+        {/* Keep Seleteng Alive Vote CTA */}
         <Card className="bg-gradient-to-r from-gold to-amber-500 text-black border-2 border-gold">
           <CardContent className="p-4 flex items-center gap-3">
             <Link to="/vote" className="flex items-center gap-4 flex-1 min-w-0">
@@ -140,13 +141,33 @@ export default function Dashboard() {
                 <VoteIcon className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-display font-bold">Limpopo Cup Fan Vote</p>
+                <p className="font-display font-bold">Keep Seleteng Alive (Kgomumg)</p>
                 <p className="text-sm opacity-80 truncate">Pick your champion — 32 teams</p>
               </div>
             </Link>
             <Link to="/vote-qr" className="text-xs font-bold underline whitespace-nowrap px-2 py-1">QR</Link>
           </CardContent>
         </Card>
+
+        {/* Invite friends — earn 10 points each */}
+        {profile && (
+          <Card className="border-primary/40">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold">Invite friends</p>
+                <p className="text-xs text-muted-foreground">Earn +10 points for each friend who joins</p>
+              </div>
+              <ShareButton
+                title="Join me on Zartour"
+                text="Join me on Zartour and explore Ga-Mphahlele — sign up with my link and we both win!"
+                url={`${window.location.origin}/auth?ref=${profile.user_id}`}
+              />
+            </CardContent>
+          </Card>
+        )}
 
 
         {/* Explore CTA */}

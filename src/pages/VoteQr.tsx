@@ -36,7 +36,7 @@ export default function VoteQr() {
         </div>
         <div>
           <p className="font-display text-2xl font-bold">Scan to Vote for Your Team</p>
-          <p className="text-muted-foreground text-sm mt-1">Limpopo Cup Fan Vote 2026</p>
+          <p className="text-muted-foreground text-sm mt-1">Keep Seleteng Alive (Kgomumg)</p>
         </div>
         <div className="bg-white p-4 rounded-xl inline-block">
           <QRCodeSVG id="public-vote-qr-svg" value={voteUrl} size={260} level="H" includeMargin />

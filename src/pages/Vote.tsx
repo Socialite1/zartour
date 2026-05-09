@@ -115,9 +115,9 @@ export default function Vote() {
           <div className="flex items-center justify-between gap-3 mb-2">
             <h1 className="font-display text-2xl sm:text-3xl font-bold flex items-center gap-2">
               <Trophy className="w-7 h-7 text-secondary" />
-              Limpopo Cup Vote
+              Keep Seleteng Alive (Kgomumg)
             </h1>
-            <Link to="/leaderboard-vote" className="text-xs sm:text-sm underline hover:opacity-80">
+            <Link to="/leaderboard" className="text-xs sm:text-sm underline hover:opacity-80">
               Leaderboard →
             </Link>
           </div>
