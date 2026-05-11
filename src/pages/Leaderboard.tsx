@@ -44,6 +44,14 @@ export default function Leaderboard() {
       if (data) setEntries(data);
     };
     load();
+
+    supabase
+      .from("top_events" as never)
+      .select("*")
+      .order("checkin_count", { ascending: false })
+      .order("avg_rating", { ascending: false })
+      .limit(20)
+      .then(({ data }: any) => data && setTopEvents(data));
   }, []);
 
   const loadTeams = async () => {
