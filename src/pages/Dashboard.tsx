@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon, Crown } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
 import DailyLoginBanner from "@/components/DailyLoginBanner";
