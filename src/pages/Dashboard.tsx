@@ -130,7 +130,8 @@ export default function Dashboard() {
                 <p className="text-sm opacity-80">Visit a location to earn points</p>
               </div>
             </CardContent>
-        </Card>
+          </Card>
+        </Link>
 
         {/* Zartour Club */}
         <Link to="/club">
