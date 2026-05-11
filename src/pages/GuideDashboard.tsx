@@ -60,6 +60,7 @@ interface AccommodationForm {
 
 const QUEST_TYPES = ["astrology", "ikigai", "human_design", "economical", "religious", "political"];
 const ACCOM_TYPES = ["lodge", "hotel", "guesthouse", "bnb", "cultural_stay"];
+const EVENT_TYPES = ["party", "wedding", "bash", "festival", "concert", "other"];
 
 export default function GuideDashboard() {
   const { user } = useAuth();
