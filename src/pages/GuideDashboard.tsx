@@ -229,6 +229,28 @@ export default function GuideDashboard() {
     loadData();
   };
 
+  const handleCreateEvent = async () => {
+    if (!guideProfile) return;
+    if (!eventForm.title.trim() || !eventForm.event_date) {
+      toast.error("Title and date are required"); return;
+    }
+    const { error } = await supabase.from("events").insert({
+      title: eventForm.title.trim().slice(0, 120),
+      event_type: eventForm.event_type,
+      description: eventForm.description.trim().slice(0, 1000) || null,
+      venue: eventForm.venue.trim().slice(0, 200) || null,
+      event_date: new Date(eventForm.event_date).toISOString(),
+      image_url: eventForm.image_url.trim() || null,
+      ticket_info: eventForm.ticket_info.trim().slice(0, 200) || null,
+      guide_id: guideProfile.id,
+    });
+    if (error) { toast.error("Failed to create event: " + error.message); return; }
+    toast.success("Event created!");
+    setEventDialogOpen(false);
+    setEventForm({ title: "", event_type: "party", description: "", venue: "", event_date: "", image_url: "", ticket_info: "" });
+    loadData();
+  };
+
   const toggleLocation = (locId: string) => {
     setSelectedLocations(prev =>
       prev.includes(locId) ? prev.filter(id => id !== locId) : [...prev, locId]
