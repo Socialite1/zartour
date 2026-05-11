@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Flame } from "lucide-react";
+import { Trophy, Flame, Star, PartyPopper } from "lucide-react";
+import { Link } from "react-router-dom";
 import ShareButton from "@/components/ShareButton";
 
 interface LeaderboardEntry {
@@ -20,12 +21,18 @@ interface TeamRow {
   vote_count: number;
 }
 
+interface TopEvent {
+  id: string; title: string; event_type: string; venue: string | null;
+  event_date: string; checkin_count: number; rating_count: number; avg_rating: number;
+}
+
 const medals = ["🥇", "🥈", "🥉"];
 
 export default function Leaderboard() {
   const { user } = useAuth();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [teams, setTeams] = useState<TeamRow[]>([]);
+  const [topEvents, setTopEvents] = useState<TopEvent[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -37,6 +44,14 @@ export default function Leaderboard() {
       if (data) setEntries(data);
     };
     load();
+
+    supabase
+      .from("top_events" as never)
+      .select("*")
+      .order("checkin_count", { ascending: false })
+      .order("avg_rating", { ascending: false })
+      .limit(20)
+      .then(({ data }: any) => data && setTopEvents(data));
   }, []);
 
   const loadTeams = async () => {
@@ -75,9 +90,10 @@ export default function Leaderboard() {
         </div>
 
         <Tabs defaultValue="explorers" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="explorers">Explorers</TabsTrigger>
-            <TabsTrigger value="teams">Keep Seleteng Alive</TabsTrigger>
+            <TabsTrigger value="teams">Teams</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explorers" className="space-y-3 mt-4">
@@ -159,6 +175,32 @@ export default function Leaderboard() {
                 </Card>
               );
             })}
+          </TabsContent>
+
+          <TabsContent value="events" className="space-y-2 mt-4">
+            <p className="text-xs text-center text-muted-foreground">Top events by check-ins & ratings</p>
+            {topEvents.length === 0 ? (
+              <Card><CardContent className="p-6 text-center text-muted-foreground text-sm">No events yet.</CardContent></Card>
+            ) : topEvents.map((e, i) => (
+              <Link key={e.id} to={`/events/${e.id}`}>
+                <Card className={i < 3 ? "border-secondary/50" : ""}>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <span className="font-display font-bold w-8 text-center text-lg">{medals[i] ?? `#${i + 1}`}</span>
+                    <PartyPopper className="w-5 h-5 text-secondary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{e.title}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{e.event_type} {e.venue ? `• ${e.venue}` : ""}</p>
+                    </div>
+                    <div className="text-right text-xs">
+                      <div className="font-bold text-secondary">{e.checkin_count} ✓</div>
+                      <div className="flex items-center gap-0.5 justify-end text-muted-foreground">
+                        <Star className="w-3 h-3 text-gold fill-gold" />{Number(e.avg_rating).toFixed(1)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
           </TabsContent>
         </Tabs>
       </div>

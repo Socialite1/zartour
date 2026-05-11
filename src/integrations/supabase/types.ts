@@ -272,6 +272,132 @@ export type Database = {
         }
         Relationships: []
       }
+      event_checkins: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          points_earned: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          points_earned?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          points_earned?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_checkins_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_checkins_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "top_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_ratings: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          rating: number
+          review: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          rating: number
+          review?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          rating?: number
+          review?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_ratings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_ratings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "top_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_date: string
+          event_type: string
+          guide_id: string
+          id: string
+          image_url: string | null
+          ticket_info: string | null
+          title: string
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_type?: string
+          guide_id: string
+          id?: string
+          image_url?: string | null
+          ticket_info?: string | null
+          title: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_type?: string
+          guide_id?: string
+          id?: string
+          image_url?: string | null
+          ticket_info?: string | null
+          title?: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
       guide_profiles: {
         Row: {
           business_name: string
@@ -974,6 +1100,21 @@ export type Database = {
         }
         Relationships: []
       }
+      top_events: {
+        Row: {
+          avg_rating: number | null
+          checkin_count: number | null
+          event_date: string | null
+          event_type: string | null
+          guide_id: string | null
+          id: string | null
+          image_url: string | null
+          rating_count: number | null
+          title: string | null
+          venue: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       advance_quest: { Args: { p_quest_id: string }; Returns: Json }
@@ -985,6 +1126,7 @@ export type Database = {
         Args: { p_badge_id: string }
         Returns: undefined
       }
+      checkin_to_event: { Args: { p_event_id: string }; Returns: Json }
       claim_daily_login_bonus: { Args: never; Returns: Json }
       get_location_by_qr: { Args: { p_qr_code_id: string }; Returns: Json }
       has_role: {

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock, Bed } from "lucide-react";
+import { Plus, MapPin, Calendar, Users, Building2, CheckCircle2, Clock, Bed, PartyPopper } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface GuideProfile {
@@ -60,6 +60,7 @@ interface AccommodationForm {
 
 const QUEST_TYPES = ["astrology", "ikigai", "human_design", "economical", "religious", "political"];
 const ACCOM_TYPES = ["lodge", "hotel", "guesthouse", "bnb", "cultural_stay"];
+const EVENT_TYPES = ["party", "wedding", "bash", "festival", "concert", "other"];
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -70,8 +71,14 @@ export default function GuideDashboard() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [accomDialogOpen, setAccomDialogOpen] = useState(false);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
   const [myAccommodations, setMyAccommodations] = useState<any[]>([]);
+  const [myEvents, setMyEvents] = useState<any[]>([]);
+  const [eventForm, setEventForm] = useState({
+    title: "", event_type: "party", description: "", venue: "",
+    event_date: "", image_url: "", ticket_info: ""
+  });
 
   // Form state for guide profile
   const [businessName, setBusinessName] = useState("");
@@ -107,15 +114,17 @@ export default function GuideDashboard() {
     if (gp) {
       setGuideProfile(gp);
       
-      const [questsRes, bookingsRes, accomRes] = await Promise.all([
+      const [questsRes, bookingsRes, accomRes, eventsRes] = await Promise.all([
         supabase.from("quests").select("*").eq("guide_id", gp.id),
         supabase.from("tour_bookings").select("*").eq("guide_id", gp.id).order("created_at", { ascending: false }),
         supabase.from("accommodations").select("*").eq("guide_id", gp.id),
+        supabase.from("events").select("*").eq("guide_id", gp.id).order("event_date", { ascending: false }),
       ]);
       
       if (questsRes.data) setMyQuests(questsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data as any);
       if (accomRes.data) setMyAccommodations(accomRes.data);
+      if (eventsRes.data) setMyEvents(eventsRes.data);
     } else {
       setSetupMode(true);
     }
@@ -220,6 +229,28 @@ export default function GuideDashboard() {
     loadData();
   };
 
+  const handleCreateEvent = async () => {
+    if (!guideProfile) return;
+    if (!eventForm.title.trim() || !eventForm.event_date) {
+      toast.error("Title and date are required"); return;
+    }
+    const { error } = await supabase.from("events").insert({
+      title: eventForm.title.trim().slice(0, 120),
+      event_type: eventForm.event_type,
+      description: eventForm.description.trim().slice(0, 1000) || null,
+      venue: eventForm.venue.trim().slice(0, 200) || null,
+      event_date: new Date(eventForm.event_date).toISOString(),
+      image_url: eventForm.image_url.trim() || null,
+      ticket_info: eventForm.ticket_info.trim().slice(0, 200) || null,
+      guide_id: guideProfile.id,
+    });
+    if (error) { toast.error("Failed to create event: " + error.message); return; }
+    toast.success("Event created!");
+    setEventDialogOpen(false);
+    setEventForm({ title: "", event_type: "party", description: "", venue: "", event_date: "", image_url: "", ticket_info: "" });
+    loadData();
+  };
+
   const toggleLocation = (locId: string) => {
     setSelectedLocations(prev =>
       prev.includes(locId) ? prev.filter(id => id !== locId) : [...prev, locId]
@@ -313,6 +344,9 @@ export default function GuideDashboard() {
             </TabsTrigger>
             <TabsTrigger value="stays" className="flex-1 gap-1.5">
               <Bed className="w-4 h-4" /> Stays
+            </TabsTrigger>
+            <TabsTrigger value="events" className="flex-1 gap-1.5">
+              <PartyPopper className="w-4 h-4" /> Events
             </TabsTrigger>
           </TabsList>
 
@@ -410,6 +444,33 @@ export default function GuideDashboard() {
                       {a.address && <p className="text-xs text-muted-foreground mt-1">{a.address}</p>}
                     </CardContent>
                   </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="events" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button onClick={() => setEventDialogOpen(true)} size="sm" className="gap-1.5">
+                <Plus className="w-4 h-4" /> Create Event
+              </Button>
+            </div>
+            {myEvents.length === 0 ? (
+              <Card><CardContent className="p-8 text-center">
+                <PartyPopper className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                <p className="text-muted-foreground">No events yet.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {myEvents.map((e: any) => (
+                  <Card key={e.id}><CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display font-semibold">{e.title}</h3>
+                      <span className="text-xs uppercase font-bold text-secondary">{e.event_type}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{new Date(e.event_date).toLocaleString()}</p>
+                    {e.venue && <p className="text-xs text-muted-foreground">{e.venue}</p>}
+                  </CardContent></Card>
                 ))}
               </div>
             )}
@@ -531,6 +592,54 @@ export default function GuideDashboard() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setAccomDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleCreateAccom}>Add Accommodation</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Event Dialog */}
+      <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display">Create Event</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Title *</Label>
+              <Input maxLength={120} value={eventForm.title} onChange={e => setEventForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Summer Bash 2026" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={eventForm.event_type} onValueChange={v => setEventForm(f => ({ ...f, event_type: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Date & Time *</Label>
+                <Input type="datetime-local" value={eventForm.event_date} onChange={e => setEventForm(f => ({ ...f, event_date: e.target.value }))} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Venue</Label>
+              <Input maxLength={200} value={eventForm.venue} onChange={e => setEventForm(f => ({ ...f, venue: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea maxLength={1000} rows={3} value={eventForm.description} onChange={e => setEventForm(f => ({ ...f, description: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Image URL</Label>
+              <Input type="url" value={eventForm.image_url} onChange={e => setEventForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Ticket info</Label>
+              <Input maxLength={200} value={eventForm.ticket_info} onChange={e => setEventForm(f => ({ ...f, ticket_info: e.target.value }))} placeholder="Free / R100 at the door / etc." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEventDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateEvent}>Create Event</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

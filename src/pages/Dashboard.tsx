@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon, Crown } from "lucide-react";
+import { QrCode, Trophy, MapPin, Sparkles, Shield, Building2, Search, Vote as VoteIcon, Crown, PartyPopper } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import RewardClaimBanner from "@/components/RewardClaimBanner";
 import DailyLoginBanner from "@/components/DailyLoginBanner";
@@ -145,6 +145,21 @@ export default function Dashboard() {
                 <p className="text-xs opacity-80">Discounts • 2x points • Early access</p>
               </div>
               <span className="text-xs font-bold bg-black/15 rounded-full px-2.5 py-1 whitespace-nowrap">Join</span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Events */}
+        <Link to="/events">
+          <Card className="hover:bg-muted/30 transition-colors cursor-pointer border-secondary/40">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                <PartyPopper className="w-5 h-5 text-secondary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold">Events</p>
+                <p className="text-xs text-muted-foreground">Parties, weddings & bashes — +25 pts to check in</p>
+              </div>
             </CardContent>
           </Card>
         </Link>
