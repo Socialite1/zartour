@@ -448,6 +448,33 @@ export default function GuideDashboard() {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="events" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button onClick={() => setEventDialogOpen(true)} size="sm" className="gap-1.5">
+                <Plus className="w-4 h-4" /> Create Event
+              </Button>
+            </div>
+            {myEvents.length === 0 ? (
+              <Card><CardContent className="p-8 text-center">
+                <PartyPopper className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                <p className="text-muted-foreground">No events yet.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {myEvents.map((e: any) => (
+                  <Card key={e.id}><CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display font-semibold">{e.title}</h3>
+                      <span className="text-xs uppercase font-bold text-secondary">{e.event_type}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{new Date(e.event_date).toLocaleString()}</p>
+                    {e.venue && <p className="text-xs text-muted-foreground">{e.venue}</p>}
+                  </CardContent></Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
 
