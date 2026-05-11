@@ -23,6 +23,7 @@ const Vote = lazy(() => import("./pages/Vote"));
 const VoteQr = lazy(() => import("./pages/VoteQr"));
 const VoteShared = lazy(() => import("./pages/VoteShared"));
 const VoteAdmin = lazy(() => import("./pages/VoteAdmin"));
+const Club = lazy(() => import("./pages/Club"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
