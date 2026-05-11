@@ -595,6 +595,54 @@ export default function GuideDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Event Dialog */}
+      <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display">Create Event</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Title *</Label>
+              <Input maxLength={120} value={eventForm.title} onChange={e => setEventForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Summer Bash 2026" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={eventForm.event_type} onValueChange={v => setEventForm(f => ({ ...f, event_type: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Date & Time *</Label>
+                <Input type="datetime-local" value={eventForm.event_date} onChange={e => setEventForm(f => ({ ...f, event_date: e.target.value }))} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Venue</Label>
+              <Input maxLength={200} value={eventForm.venue} onChange={e => setEventForm(f => ({ ...f, venue: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea maxLength={1000} rows={3} value={eventForm.description} onChange={e => setEventForm(f => ({ ...f, description: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Image URL</Label>
+              <Input type="url" value={eventForm.image_url} onChange={e => setEventForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Ticket info</Label>
+              <Input maxLength={200} value={eventForm.ticket_info} onChange={e => setEventForm(f => ({ ...f, ticket_info: e.target.value }))} placeholder="Free / R100 at the door / etc." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEventDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateEvent}>Create Event</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
