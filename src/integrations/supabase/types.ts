@@ -215,6 +215,39 @@ export type Database = {
           },
         ]
       }
+      club_memberships: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          renewal_count: number
+          started_at: string
+          total_points_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          renewal_count?: number
+          started_at?: string
+          total_points_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          renewal_count?: number
+          started_at?: string
+          total_points_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_logins: {
         Row: {
           created_at: string
@@ -961,6 +994,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_club_member: { Args: { _user_id: string }; Returns: boolean }
+      join_zartour_club: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

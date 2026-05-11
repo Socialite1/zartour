@@ -23,6 +23,7 @@ const Vote = lazy(() => import("./pages/Vote"));
 const VoteQr = lazy(() => import("./pages/VoteQr"));
 const VoteShared = lazy(() => import("./pages/VoteShared"));
 const VoteAdmin = lazy(() => import("./pages/VoteAdmin"));
+const Club = lazy(() => import("./pages/Club"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="/vote/shared" element={<VoteShared />} />
               <Route path="/leaderboard-vote" element={<Navigate to="/leaderboard" replace />} />
               <Route path="/vote-admin" element={<ProtectedRoute><VoteAdmin /></ProtectedRoute>} />
+              <Route path="/club" element={<ProtectedRoute><Club /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
