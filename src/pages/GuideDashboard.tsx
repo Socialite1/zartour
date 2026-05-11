@@ -345,6 +345,9 @@ export default function GuideDashboard() {
             <TabsTrigger value="stays" className="flex-1 gap-1.5">
               <Bed className="w-4 h-4" /> Stays
             </TabsTrigger>
+            <TabsTrigger value="events" className="flex-1 gap-1.5">
+              <PartyPopper className="w-4 h-4" /> Events
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="quests" className="space-y-4 mt-4">
