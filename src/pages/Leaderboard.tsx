@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Flame } from "lucide-react";
+import { Trophy, Flame, Star, PartyPopper } from "lucide-react";
+import { Link } from "react-router-dom";
 import ShareButton from "@/components/ShareButton";
 
 interface LeaderboardEntry {
