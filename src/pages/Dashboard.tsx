@@ -149,6 +149,21 @@ export default function Dashboard() {
           </Card>
         </Link>
 
+        {/* Events */}
+        <Link to="/events">
+          <Card className="hover:bg-muted/30 transition-colors cursor-pointer border-secondary/40">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                <PartyPopper className="w-5 h-5 text-secondary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold">Events</p>
+                <p className="text-xs text-muted-foreground">Parties, weddings & bashes — +25 pts to check in</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         {/* Keep Seleteng Alive Vote CTA */}
         <Card className="bg-gradient-to-r from-gold to-amber-500 text-black border-2 border-gold">
           <CardContent className="p-4 flex items-center gap-3">
