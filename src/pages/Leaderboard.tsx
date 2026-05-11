@@ -176,6 +176,32 @@ export default function Leaderboard() {
               );
             })}
           </TabsContent>
+
+          <TabsContent value="events" className="space-y-2 mt-4">
+            <p className="text-xs text-center text-muted-foreground">Top events by check-ins & ratings</p>
+            {topEvents.length === 0 ? (
+              <Card><CardContent className="p-6 text-center text-muted-foreground text-sm">No events yet.</CardContent></Card>
+            ) : topEvents.map((e, i) => (
+              <Link key={e.id} to={`/events/${e.id}`}>
+                <Card className={i < 3 ? "border-secondary/50" : ""}>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <span className="font-display font-bold w-8 text-center text-lg">{medals[i] ?? `#${i + 1}`}</span>
+                    <PartyPopper className="w-5 h-5 text-secondary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{e.title}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{e.event_type} {e.venue ? `• ${e.venue}` : ""}</p>
+                    </div>
+                    <div className="text-right text-xs">
+                      <div className="font-bold text-secondary">{e.checkin_count} ✓</div>
+                      <div className="flex items-center gap-0.5 justify-end text-muted-foreground">
+                        <Star className="w-3 h-3 text-gold fill-gold" />{Number(e.avg_rating).toFixed(1)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </TabsContent>
         </Tabs>
       </div>
     </AppLayout>
