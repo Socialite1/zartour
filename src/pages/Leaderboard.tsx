@@ -21,12 +21,18 @@ interface TeamRow {
   vote_count: number;
 }
 
+interface TopEvent {
+  id: string; title: string; event_type: string; venue: string | null;
+  event_date: string; checkin_count: number; rating_count: number; avg_rating: number;
+}
+
 const medals = ["🥇", "🥈", "🥉"];
 
 export default function Leaderboard() {
   const { user } = useAuth();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [teams, setTeams] = useState<TeamRow[]>([]);
+  const [topEvents, setTopEvents] = useState<TopEvent[]>([]);
 
   useEffect(() => {
     const load = async () => {
