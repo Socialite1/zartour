@@ -90,9 +90,10 @@ export default function Leaderboard() {
         </div>
 
         <Tabs defaultValue="explorers" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="explorers">Explorers</TabsTrigger>
-            <TabsTrigger value="teams">Keep Seleteng Alive</TabsTrigger>
+            <TabsTrigger value="teams">Teams</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explorers" className="space-y-3 mt-4">
