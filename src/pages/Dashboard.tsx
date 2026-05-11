@@ -147,7 +147,6 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </Link>
-        </Link>
 
         {/* Keep Seleteng Alive Vote CTA */}
         <Card className="bg-gradient-to-r from-gold to-amber-500 text-black border-2 border-gold">
