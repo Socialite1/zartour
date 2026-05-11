@@ -74,6 +74,7 @@ const App = () => (
               <Route path="/vote/shared" element={<VoteShared />} />
               <Route path="/leaderboard-vote" element={<Navigate to="/leaderboard" replace />} />
               <Route path="/vote-admin" element={<ProtectedRoute><VoteAdmin /></ProtectedRoute>} />
+              <Route path="/club" element={<ProtectedRoute><Club /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
