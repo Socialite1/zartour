@@ -71,8 +71,14 @@ export default function GuideDashboard() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [accomDialogOpen, setAccomDialogOpen] = useState(false);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
   const [myAccommodations, setMyAccommodations] = useState<any[]>([]);
+  const [myEvents, setMyEvents] = useState<any[]>([]);
+  const [eventForm, setEventForm] = useState({
+    title: "", event_type: "party", description: "", venue: "",
+    event_date: "", image_url: "", ticket_info: ""
+  });
 
   // Form state for guide profile
   const [businessName, setBusinessName] = useState("");
