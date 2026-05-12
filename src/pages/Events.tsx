@@ -33,7 +33,7 @@ export default function Events() {
     <AppLayout>
       <div className="p-4 space-y-4 animate-fade-in">
         <div className="pt-2 text-center">
-          <PartyPopper className="w-10 h-10 mx-auto text-secondary mb-2" />
+          <PartyPopper className="w-10 h-10 mx-auto text-primary mb-2" />
           <h1 className="font-display text-2xl font-bold">Events</h1>
           <p className="text-muted-foreground text-sm">Parties, weddings & bashes — earn 25 pts per check-in</p>
         </div>
@@ -44,12 +44,12 @@ export default function Events() {
           <div className="space-y-3">
             {events.map(e => (
               <Link key={e.id} to={`/events/${e.id}`}>
-                <Card className="hover:bg-muted/30 transition-colors overflow-hidden">
+                <Card className="hover:bg-muted/30 transition-colors overflow-hidden border-l-4 border-l-primary">
                   {e.image_url && <img src={e.image_url} alt={e.title} className="w-full h-32 object-cover" />}
                   <CardContent className="p-4 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <h3 className="font-display font-bold">{e.title}</h3>
-                      <span className="text-xs uppercase font-bold text-secondary">{e.event_type}</span>
+                      <span className="text-xs uppercase font-bold text-primary">{e.event_type}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Calendar className="w-3.5 h-3.5" />

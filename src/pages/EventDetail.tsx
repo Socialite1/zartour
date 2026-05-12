@@ -85,7 +85,7 @@ export default function EventDetail() {
         {ev.image_url && <img src={ev.image_url} alt={ev.title} className="w-full h-48 object-cover rounded-lg" />}
 
         <div>
-          <span className="text-xs uppercase font-bold text-secondary">{ev.event_type}</span>
+          <span className="text-xs uppercase font-bold text-primary">{ev.event_type}</span>
           <h1 className="font-display text-2xl font-bold">{ev.title}</h1>
           <div className="text-sm text-muted-foreground mt-1 space-y-0.5">
             <div className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {format(new Date(ev.event_date), "PPpp")}</div>
