@@ -16,14 +16,8 @@ interface Team {
   display_order: number;
 }
 
-// Voting deadline — 7 days from first load
-const DEFAULT_DEADLINE = (() => {
-  const stored = typeof window !== "undefined" ? localStorage.getItem("vote_deadline") : null;
-  if (stored) return parseInt(stored, 10);
-  const d = Date.now() + 7 * 24 * 60 * 60 * 1000;
-  if (typeof window !== "undefined") localStorage.setItem("vote_deadline", String(d));
-  return d;
-})();
+// Voting deadline — fixed at end of 16 June 2026
+const DEFAULT_DEADLINE = new Date("2026-06-16T23:59:59").getTime();
 
 function useCountdown(target: number) {
   const [now, setNow] = useState(Date.now());
