@@ -32,6 +32,21 @@ const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // After OAuth (which returns to the origin), forward an authenticated,
+  // onboarded user to the destination they were originally headed to
+  // (e.g. a scanned QR check-in page).
+  useEffect(() => {
+    if (!user || (profile && !profile.onboarded)) return;
+    const dest = localStorage.getItem("zartour_post_auth_redirect");
+    if (dest) {
+      localStorage.removeItem("zartour_post_auth_redirect");
+      const current = location.pathname + location.search;
+      if (dest !== current) navigate(dest, { replace: true });
+    }
+  }, [user, profile, location.pathname, location.search, navigate]);
 
   if (loading) {
     return (
