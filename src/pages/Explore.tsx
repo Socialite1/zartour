@@ -36,8 +36,16 @@ interface Accommodation {
   longitude: number | null;
 }
 
+// WhatsApp contact for booking confirmations (South African number in E.164)
+const WHATSAPP_NUMBER = "27607996938";
+
+function openWhatsApp(message: string) {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export default function Explore() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [tours, setTours] = useState<GuideTour[]>([]);
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [loading, setLoading] = useState(true);
