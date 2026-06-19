@@ -105,7 +105,15 @@ export default function Explore() {
       return;
     }
 
-    toast.success("Tour booked! The guide will confirm shortly.");
+    toast.success("Tour booked! Continue on WhatsApp to confirm.");
+    openWhatsApp(
+      `Hi! I've just booked a tour/quest on Zartour.\n\n` +
+        `Tour: ${bookingTour.title}\n` +
+        `Name: ${profile?.full_name || ""}\n` +
+        `Date: ${bookingDate}\n` +
+        `Party size: ${partySize}` +
+        (bookingNotes ? `\nNotes: ${bookingNotes}` : "")
+    );
     setBookingTour(null);
     setBookingDate("");
     setPartySize("1");
