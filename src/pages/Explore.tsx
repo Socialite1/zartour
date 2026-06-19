@@ -140,7 +140,16 @@ export default function Explore() {
       return;
     }
 
-    toast.success("Accommodation booked!");
+    toast.success("Stay booked! Continue on WhatsApp to confirm.");
+    openWhatsApp(
+      `Hi! I've just booked a stay on Zartour.\n\n` +
+        `Accommodation: ${bookingAccom.name}\n` +
+        `Name: ${profile?.full_name || ""}\n` +
+        `Check-in: ${checkInDate}\n` +
+        `Check-out: ${checkOutDate}\n` +
+        `Guests: ${guests}` +
+        (accomNotes ? `\nNotes: ${accomNotes}` : "")
+    );
     setBookingAccom(null);
     setCheckInDate("");
     setCheckOutDate("");
