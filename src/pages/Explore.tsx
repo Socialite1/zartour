@@ -36,8 +36,16 @@ interface Accommodation {
   longitude: number | null;
 }
 
+// WhatsApp contact for booking confirmations (South African number in E.164)
+const WHATSAPP_NUMBER = "27607996938";
+
+function openWhatsApp(message: string) {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export default function Explore() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [tours, setTours] = useState<GuideTour[]>([]);
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,7 +105,15 @@ export default function Explore() {
       return;
     }
 
-    toast.success("Tour booked! The guide will confirm shortly.");
+    toast.success("Tour booked! Continue on WhatsApp to confirm.");
+    openWhatsApp(
+      `Hi! I've just booked a tour/quest on Zartour.\n\n` +
+        `Tour: ${bookingTour.title}\n` +
+        `Name: ${profile?.full_name || ""}\n` +
+        `Date: ${bookingDate}\n` +
+        `Party size: ${partySize}` +
+        (bookingNotes ? `\nNotes: ${bookingNotes}` : "")
+    );
     setBookingTour(null);
     setBookingDate("");
     setPartySize("1");
@@ -124,7 +140,16 @@ export default function Explore() {
       return;
     }
 
-    toast.success("Accommodation booked!");
+    toast.success("Stay booked! Continue on WhatsApp to confirm.");
+    openWhatsApp(
+      `Hi! I've just booked a stay on Zartour.\n\n` +
+        `Accommodation: ${bookingAccom.name}\n` +
+        `Name: ${profile?.full_name || ""}\n` +
+        `Check-in: ${checkInDate}\n` +
+        `Check-out: ${checkOutDate}\n` +
+        `Guests: ${guests}` +
+        (accomNotes ? `\nNotes: ${accomNotes}` : "")
+    );
     setBookingAccom(null);
     setCheckInDate("");
     setCheckOutDate("");
