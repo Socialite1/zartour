@@ -18,6 +18,13 @@ export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
+  // Persist intended destination (e.g. a scanned QR check-in) so it survives
+  // OAuth round-trips and the onboarding step for brand-new accounts.
+  useEffect(() => {
+    if (redirectTo && redirectTo !== "/") {
+      localStorage.setItem("zartour_post_auth_redirect", redirectTo);
+    }
+  }, [redirectTo]);
   // Capture referral code from URL or persisted localStorage
   const refFromUrl = searchParams.get("ref");
   useEffect(() => {
@@ -34,6 +41,7 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back!");
+        localStorage.removeItem("zartour_post_auth_redirect");
         navigate(redirectTo);
       } else {
         const { error } = await supabase.auth.signUp({

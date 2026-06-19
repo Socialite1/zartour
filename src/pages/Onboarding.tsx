@@ -57,7 +57,9 @@ export default function Onboarding() {
       if (error) throw error;
       await refreshProfile();
       toast.success("Welcome to Zartour! 🎉");
-      navigate("/", { replace: true });
+      const dest = localStorage.getItem("zartour_post_auth_redirect");
+      localStorage.removeItem("zartour_post_auth_redirect");
+      navigate(dest || "/", { replace: true });
     } catch (err: any) {
       toast.error(err.message || "Could not complete onboarding");
     } finally {
