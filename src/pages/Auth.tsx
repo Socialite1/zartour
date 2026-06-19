@@ -41,6 +41,7 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back!");
+        localStorage.removeItem("zartour_post_auth_redirect");
         navigate(redirectTo);
       } else {
         const { error } = await supabase.auth.signUp({
