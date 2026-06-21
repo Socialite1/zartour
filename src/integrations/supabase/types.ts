@@ -1148,6 +1148,9 @@ export type Database = {
         | "economical"
         | "religious"
         | "political"
+        | "cultural"
+        | "leisure"
+        | "spiritual"
       user_origin:
         | "around_ga_mphahlele"
         | "local_community"
@@ -1288,6 +1291,9 @@ export const Constants = {
         "economical",
         "religious",
         "political",
+        "cultural",
+        "leisure",
+        "spiritual",
       ],
       user_origin: [
         "around_ga_mphahlele",
