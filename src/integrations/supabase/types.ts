@@ -617,6 +617,39 @@ export type Database = {
         }
         Relationships: []
       }
+      makgabeng_checkpoints: {
+        Row: {
+          answer: string | null
+          checkpoint: number
+          choice: string | null
+          created_at: string
+          id: string
+          photo_path: string | null
+          points_awarded: number
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          checkpoint: number
+          choice?: string | null
+          created_at?: string
+          id?: string
+          photo_path?: string | null
+          points_awarded?: number
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          checkpoint?: number
+          choice?: string | null
+          created_at?: string
+          id?: string
+          photo_path?: string | null
+          points_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       point_rewards: {
         Row: {
           created_at: string
@@ -1129,6 +1162,14 @@ export type Database = {
       checkin_to_event: { Args: { p_event_id: string }; Returns: Json }
       claim_daily_login_bonus: { Args: never; Returns: Json }
       get_location_by_qr: { Args: { p_qr_code_id: string }; Returns: Json }
+      get_makgabeng_wall: {
+        Args: never
+        Returns: {
+          created_at: string
+          first_name: string
+          message: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1138,6 +1179,15 @@ export type Database = {
       }
       is_club_member: { Args: { _user_id: string }; Returns: boolean }
       join_zartour_club: { Args: never; Returns: Json }
+      submit_makgabeng_checkpoint: {
+        Args: {
+          _answer: string
+          _checkpoint: number
+          _choice: string
+          _photo_path: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
