@@ -19,6 +19,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const GuideDashboard = lazy(() => import("./pages/GuideDashboard"));
 const Explore = lazy(() => import("./pages/Explore"));
 const QuestPath = lazy(() => import("./pages/QuestPath"));
+const Makgabeng = lazy(() => import("./pages/Makgabeng"));
 const Vote = lazy(() => import("./pages/Vote"));
 const VoteQr = lazy(() => import("./pages/VoteQr"));
 const VoteShared = lazy(() => import("./pages/VoteShared"));
@@ -83,6 +84,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/quests" element={<ProtectedRoute><Quests /></ProtectedRoute>} />
               <Route path="/quest-path" element={<ProtectedRoute><QuestPath /></ProtectedRoute>} />
+              <Route path="/makgabeng" element={<ProtectedRoute><Makgabeng /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
               <Route path="/guide" element={<ProtectedRoute><GuideDashboard /></ProtectedRoute>} />
