@@ -116,6 +116,15 @@ export default function Quests() {
           </p>
         </div>
 
+        <button
+          onClick={() => navigate("/makgabeng")}
+          className="w-full text-left rounded-2xl p-4 border-2 border-accent bg-gradient-to-br from-accent/25 to-primary/10"
+        >
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Flagship Quest · 950 pts</p>
+          <p className="font-display text-lg font-bold">🏔️ The Guardians of Makgabeng</p>
+          <p className="text-xs text-muted-foreground">Earth · Art · History · Culture · Nature</p>
+        </button>
+
         <div className="space-y-4">
           {quests.map((quest) => {
             const uq = userQuests.find((q) => q.quest_id === quest.id);
